@@ -1,0 +1,107 @@
+{% extends 'one.html' %} 
+{% load static %}
+{% load crispy_forms_tags %} 
+
+{% block login %}
+
+{% endblock %}
+{% block register %}
+<li><a href="{% url 'register' %}">Register</a></li>
+{% endblock %}
+{% block pagecontent %}
+
+<style>
+  
+
+
+
+    .forms {
+        width: 100%;
+        padding: 1em;
+        font-weight: 800;
+        text-align: left;
+    }
+    
+    .form-btn {
+        width: 150px;
+        height: 30px;
+        border: none;
+        background-color: rgb(211, 205, 205);
+        font-weight: 600;
+        background-color: green;
+        border-radius: 1em;
+    }
+    .navlist a {
+        color: #989aa6;
+    }
+
+    .navlist li::after {
+        border-bottom: 2px solid #989aa6;
+    }
+
+    input,textarea,select{
+        border-color:  rgba(72, 134, 233, 0.856) !important;
+        
+    }
+    .rows{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .datarow{
+        width: 75%;
+        height: 475px;
+        box-shadow: 0 4px 8px 0 #989aa6d5, 0 6px 20px 0 #989aa6d5;
+        background-color: white;
+        position: relative;
+        display: flex;
+        
+    }
+    .col{
+       display: flex;
+       align-items: center;
+       justify-content: center;
+        filter: grayscale(.4);
+    }
+
+    .form-col{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+    }
+    .headding_img{
+        width: 135px;
+        height: 135px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0,0.20), 0 6px 20px 0 rgba(0,0,0,.19);
+        position: absolute;
+        z-index: 10;
+        top: .5em;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        background-color: #989aa6;
+    }
+
+</style>
+<div class="rows">
+    <div class="datarow">
+        <img class="headding_img" src="{% static 'man.png' %}" alt="">
+        <div class="col-sm-7 col">
+            <img class="img" src="{% static 'login_img.png'%}" alt="">
+        </div>
+        <div class="col-sm-5 form-col">
+                <form class="forms" method="POST">
+                    <h2 style="padding: 0;font-weight: 650;">Login</h2>
+                    {% csrf_token %} {{ form|crispy }}
+                    
+                    <button class="form-btn" style="color: white;">Login</button>
+                </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

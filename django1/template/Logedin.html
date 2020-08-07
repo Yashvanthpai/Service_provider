@@ -1,0 +1,1264 @@
+<!DOCTYPE html> 
+{% load static %}
+{% load crispy_forms_tags %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" data-auto-replace-svg="nest"></script>
+</head>
+
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-family: 'Roboto', ;
+    }
+    
+    .maincontainer {
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+        background-image: url("{% static 'background.jpg' %}");
+        background-position:center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    .asteriskField{
+        display: none;
+    }
+    
+
+    
+    .nav-container {
+        width: 100%;
+        height: 2.5em;
+        background-color: transparent;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+    }
+    
+    .navlist {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        flex-basis: 40%;
+        margin-top: 1em;
+        height: 100%;
+    }
+    
+    .navlist .nav-li {
+        list-style: none;
+        position: relative;
+    }
+    
+    .navlist .nav-li::after {
+        content: " ";
+        position: absolute;
+        left: 0;
+        bottom: -3px;
+        border-bottom: 2px solid #9398ad;
+        width: 100%;
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform ease-in 150ms;
+    }
+    
+    .navlist .nav-li:hover::after {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+    
+    .navlist .nav-a {
+        text-decoration: none;
+        font-family: 'Open Sans', ;
+        letter-spacing: .05em;
+        font-size: 1em;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #9398ad;
+    }
+    
+    .content-container {
+        height: calc(100% - 2.5em);
+        overflow: hidden;
+    }
+    
+    .container {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        display: flex;
+        justify-content: space-around;
+        background-color: #e4e4e4;
+        border-radius: 1em;
+        padding: .75em;
+        cursor: pointer;
+    }
+
+    .filter-bar{
+        width:90%;
+        margin: auto;
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        margin-top: .4em;
+    }
+    .search-form{
+        width:30%;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        background-color: transparent;
+        padding-right: 1.0em;
+    }
+    #search-label{
+        background-color: white;
+        padding: 10px 15px;
+        border-radius: 35px;
+        color: blue;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        margin: 0;
+    }
+    #search{
+        background-color: #e4e4e4;
+        text-align: center !important;
+        border: 2px solid white;
+        border-radius:15px;
+        height: 2em;
+        margin-right: -2.5em;
+        {% if request.GET.search %}
+                width: 350px;
+        {% else %}
+                width: 0px;
+        {% endif %}
+        transition: width  ease-in 200ms;
+    }
+
+    #search-label:hover + #search ,#search:hover, #search:focus{
+        width: 350px;
+    }
+
+    .row{
+        width:100%;
+        margin: 0;
+                
+    }
+
+    .rows{
+        width: 100%;
+        height: calc(100% - 3.5em );
+        overflow: hidden;
+        background-color: transparent;
+        position: relative;
+    }
+
+    .columns{
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+    }
+
+    .one {
+        position:absolute;
+        top:0;
+        left:0%;
+        transition:left  ease-in 100ms;
+    }
+
+    .two {
+        position:absolute;
+        top:0;
+        left:100%;
+        transition:left  ease-in 100ms;
+    }
+
+    .three {
+        position:absolute;
+        top:0;
+        left:200%;
+        transition:left  ease-in 100ms;
+    }
+
+    .four {
+        position:absolute;
+        top:0;
+        left:300%;
+        transition:left  ease-in 100ms;
+    }
+
+    
+    .text-content {
+        width: 700px;
+    }
+    
+    .img-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .img-content img {
+        width: 125px;
+        height: 125px;
+        object-fit: cover;
+        border-radius: 6em;
+        padding: .3em;
+        background-color: rgb(216, 212, 212);
+    }
+    .text-h4{
+        font-size: 1.0em;
+        font-weight: 600;
+    }
+   
+    .welcome{
+        color: rgb(50, 144, 221);
+        font-weight: 600;
+        font-size: 1.1em;
+        margin-right: 1em;
+    }
+
+    .checked {
+        color: orange;
+      }
+
+    .headding{
+          width: 80%;
+          margin: auto;
+          margin-top: 1em;
+          font-size: 1.1em;
+          font-weight: 800;
+          text-align: center;
+          box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+          padding: .7em 0em;
+          border-radius: .3em;
+    }
+
+    .card_images{
+        width: 3.5em;
+        height: 3.5em;
+        object-fit: cover;
+        border-radius: 1em;
+    }
+
+
+    .status{
+        margin: 0em .5em;
+    }
+    .requested,.fa-ellipsis-h{
+        color: #9698a4;
+    }
+    .deliverd{
+        color: blue;
+    }
+    .accepted{
+        color: #28a745;
+    }
+    .dash{
+        color: rgba(124, 124, 124, 0.432) ;
+    }
+
+    .left_img_cover {
+        text-align: center;
+        position: relative;
+        cursor: pointer;
+        padding: 0;
+        margin: 0;
+    }
+    .left_img_cover::after{
+        content: attr(name);
+        position: absolute;
+        background-color: #c5c8cd;
+        left: 50%;
+        top: 50%;
+        text-align: center;
+        padding: .5em;
+        transform: translate(-50%,-50%) ;
+        opacity: 0;
+        transition: opacity ease 100ms;
+        
+    }
+
+    .left_img_cover:hover::after{
+        opacity: 1;
+    }
+
+    .table{
+        width: 65%; 
+        margin: auto;
+    }
+
+     td , th{
+        text-align: center;
+        vertical-align: initial !important;
+        font-size: 1em;
+        font-weight: 650;
+    }
+    .jobinfo{
+        background-color: transparent;
+        color: rgba(50, 144, 221, 0.473);
+        font-size: 1em;
+        cursor: pointer;
+    }
+    .jobinfo:hover{
+        color: rgb(50, 144, 221);
+    }
+    .padinator{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .padinator > *{
+        margin: 1em;
+    }
+
+    .pop-up-overlay{
+        display: block;
+        z-index: 15;
+        background-color: rgba(255, 255, 255, 0.616);
+        /* background-image: url("{% static 'background.jpg' %}"); */
+        background-position:center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform-origin: center;
+        transform: scale(0);
+        transition: transform -120ms ease-in-out 250ms;
+    }
+    .pop-up-user,.pop-up-bill_view,.pop-up-job_info,.pop-up-bill_genarate{
+        display: none;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+        z-index: 16;
+        width: 50%;
+        background-color: transparent;
+        opacity: 0;
+        transition: opacity ease-in-out ;
+    }
+    .user_container{
+        width: 100%;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        background-color: white;
+        padding:  1.5em;
+        border-radius: 1em;
+    }
+    .user_img{
+        width: 12em;
+        height: 12em;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+    }
+
+    .popup-close-btn{
+        background-color: transparent;
+        padding: 0.5em;
+        border: none;
+        position: absolute;
+        top: 0.25em;
+        right: 0.5em;
+        cursor: pointer;
+    }
+    .formhedding{
+        width: 75%;
+        margin: auto;
+        font-size: 1.5em;
+        font-weight: 700;
+        margin-top: .5em;
+    }
+
+    .tab_btn_group{
+        display: flex;
+        padding: .1em;
+        justify-content: flex-start;
+        align-items: center;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        position: relative;
+    }
+    /* .tab_btn_group::after{
+        content: "Dashbord Option";
+        line-height: 2em;
+        text-align: center;
+        font-size: 1.2em;
+        font-weight: 700;
+        color: rgb(155, 155, 155);
+        position: absolute;
+        left: .25em;
+        top: .25em;
+        right: .25em;
+        bottom: .25em;
+        background-color: white;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        transform-origin: left;
+        transform: scale(1);
+        transition: transform 250ms ease-in;
+    }
+    .tab_btn_group:hover::after{
+        transform: scale(0);
+        transform-origin: right;  
+    } */
+    .tab_btn{
+        border: none;
+        padding: .5em 1em;
+        margin: .3em;
+        color: rgb(155, 155, 155);
+        font-weight: 700;
+        cursor: pointer;
+        transform: rotate(0deg);
+        transition: transform 350ms ease-in-out;
+    }
+
+    .tab_btn:hover{
+         color: black;
+         transform: rotate(360deg);
+         background-color: transparent;
+         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+    }
+    .tab_btn_checked{
+         color: black;
+         transform: rotate(360deg);
+         background-color: transparent;
+         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+  
+    }
+    
+</style>
+
+<body>
+    <div class="maincontainer" >
+        <div class="nav-container">
+            <ul class="navlist">
+                <li class="nav-li" onclick="logouts()"><a class="nav-a" href="">Home</a></li>
+                <li class="nav-item dropdown" style="list-style: none;margin-left:0">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" style="color:#464850"><span class="welcome">Welcome</span>{{ request.user.username }}</a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                      <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                    </div>
+                  </li>
+            </ul>
+        </div>
+        <div class="content-container" >
+            <div class="filter-bar">
+                <div class="tab_btn_group">
+                    <button class="tab_btn tab_btn_checked" onclick="slidetab_one()">Dashbord</button>
+                    <button class="tab_btn " onclick="slidetab_two()">Request</button>
+                    <button class="tab_btn " onclick="slidetab_three()">Work</button>
+                    <button class="tab_btn " onclick="slidetab_four()">History</button>
+                </div>
+
+                 <form  class="search-form" method="GET" >
+                    <input  id='search' type="search" name="search" {% if request.GET.search %} value="{{ request.GET.search }}" {% endif %}>
+                    <label id="search-label"  for="search"><i class="fas fa-search"></i></label>
+                </form> 
+
+                
+            </div>
+
+            <div class="rows">
+                    <div class="columns one">
+                            <h2 class="headding" style="width: 90%;">Service Providers</h2>
+                            <div class="row user_paginator" style="padding: 1em 1.5em 1em 1.5em;width: 90%; margin: auto;">
+                                    {% for value in userlist %}
+                                            <div class="col-sm-3 unit">
+                                                <div class="container mb-4" onclick='get_user_data("{{ value.uid }}")'>
+                                                    <div class="text-content">
+                                                        <h4 class="text-h4">{{ value.user.username }}</h4>
+                                                        <h4 class="text-h4">{{ value.phonenumber }}</h4>
+                                                        {% for x in "stars" %}
+                                                                {% if forloop.counter <= value.rating %}
+                                                                    <span class="fa fa-star checked"></span>
+                                                                {% else %}
+                                                                    <span class="fa fa-star"></span>
+                                                                {% endif %}
+                                                        {% endfor %}
+                                                        <span>( {{ value.rated_user_count}} )</span>
+                                                    </div>
+                                                    <div class="img-content">
+                                                        <img src="{{ value.profile_pic.url }}" alt="">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                    {% endfor %}
+                                    
+                            </div>
+                            <div class="padinator">
+                                    {% if user_paginator.previous_page %}
+                                    <button class="btn btn-warning" onclick='pagination(1,"{{user_paginator.previous_page}}")'>
+                                        Previous Page
+                                    </button>
+                                    {% endif %}
+                                    <span class="btn btn-info">{{ user_paginator.current_page}}/{{ user_paginator.total_page}} Pages</span>
+                                    {% if user_paginator.next_page %}
+                                    <button class="btn btn-warning" onclick='pagination(1,"{{user_paginator.next_page}}")'>
+                                        Next Page
+                                    </button>
+                                    {% endif %}
+                            </div>
+                    </div>
+                    <div class="columns two">
+                        <h2 class="headding">Work Request <span style="float: right;">
+                                                            <i class="fas fa-check-double requested status"></i>
+                                                            <i class="fas fa-ellipsis-h "></i>
+                                                            <i class="fas fa-check-double  status dash"></i>
+                                                            <i class="fas fa-ellipsis-h dash"></i>
+                                                            <i class="fas fa-check-double  status dash"></i>
+                                                        </span>
+                        </h2>
+                        <div class="row" style="padding: 1em 1em;">
+                          <table class="table table-hover table-striped request_table">
+                                <thead>
+                                    <tr>
+                                    <th scope="col">Job id</th>
+                                    <th scope="col">Seeker</th>
+                                    <th scope="col">Work-type</th>
+                                    <th scope="col">Accept</th>
+                                    <th scope="col" >Cancel</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for value in job_request_list %}
+                                        <tr>
+                                            <th>
+                                                {{ value.job_id }} <span class="jobinfo" onclick='get_job_data("{{value.job_id}}")'><i class="fas fa-info-circle"></i></span>
+                                            </th>
+                                            <td>
+                                                <p class="left_img_cover" name="{{value.seeker.user.username}}" onclick='get_user_data("{{value.seeker.uid}}")'>
+                                                            <img class="card_images" src="{{value.seeker.profile_pic.url}}" alt="">
+                                                </p>
+                                            </td>
+                                            <th >
+                                                {{ value.job_title }}
+                                            </th>
+                                            <td > <button class="btn btn-warning" onclick='accept_jobrequest("{{ value.job_id }}")'><i class="fas fa-check"></i> </button> </td>
+                                            <td > <button class="btn btn-danger"  onclick='reject_jobrequest("{{ value.job_id }}")'> <i class="fas fa-times"></i> </button> </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <th colspan="5">No data</th>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                </table>
+                            
+
+                            
+                        </div>
+                        <div class="padinator">
+                                    {% if job_request_paginator.previous_page %}
+                                    <button class="btn btn-warning" onclick='pagination(2,"{{job_request_paginator.previous_page}}")'>
+                                        Previous Page
+                                    </button>
+                                    {% endif %}
+                                    <span class="btn btn-info">{{ job_request_paginator.current_page}}/{{ job_request_paginator.total_page}} Pages</span>
+                                    {% if job_request_paginator.next_page %}
+                                    <button class="btn btn-warning" onclick='pagination(2,"{{job_request_paginator.next_page}}")'>
+                                        Next Page
+                                    </button>
+                                    {% endif %}
+                            </div>
+                    </div>
+                    <div class="columns three">
+                        <h2 class="headding">Current Work <span style="float: right;">
+                                                            <i class="fas fa-check-double requested status"></i>
+                                                            <i class="fas fa-ellipsis-h "></i>
+                                                            <i class="fas fa-check-double deliverd status"></i>
+                                                            <i class="fas fa-ellipsis-h "></i>
+                                                            <i class="fas fa-check-double  status dash"></i>
+                                                        </span>
+                        </h2>
+                        <div class="row" style="padding: 1em 1em;">
+                          <table class="table table-hover table-striped curent_work">
+                                <thead>
+                                    <tr>
+                                    <th scope="col">Job id</th>
+                                    <th scope="col">Seeker</th>
+                                    <th scope="col">Work-type</th>
+                                    <th scope="col" >Contact Cust.</th>
+                                    <th scope="col" >Genarate Bill</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for value in currentjob_list %}
+                                        <tr>
+                                            <th>
+                                                {{ value.job_id }} <span class="jobinfo" onclick='get_job_data("{{value.job_id}}")'><i class="fas fa-info-circle"></i></span>
+                                            </th>
+                                            <td>
+                                                <p class="left_img_cover" name="{{value.seeker.user.username}}" onclick='get_user_data("{{value.seeker.uid}}")'>
+                                                            <img class="card_images" src="{{value.seeker.profile_pic.url}}" alt="">
+                                                </p>
+                                            </td>
+                                            <th >
+                                                {{ value.job_title }}
+                                            </th>
+                                            <td > <button class="btn btn-success"><i class="fas fa-phone-volume"></i></button> </td>
+                                            <td > <button class="btn btn-warning" onclick='genarate_bill_data("{{value.job_id}}")'><i class="fas fa-file-invoice-dollar"></i></button> </td>
+                                        </tr> 
+                                    {% empty %}
+                                        <tr>
+                                            <th colspan="5">No data</th>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                </table>
+                        </div>
+                        <div class="padinator">
+                                    {% if currentjob_paginator.previous_page %}
+                                    <button class="btn btn-warning" onclick='pagination(3,"{{currentjob_paginator.previous_page}}")'>
+                                        Previous Page
+                                    </button>
+                                    {% endif %}
+                                    <span class="btn btn-info">{{ currentjob_paginator.current_page}}/{{ currentjob_paginator.total_page}} Pages</span>
+                                    {% if currentjob_paginator.next_page %}
+                                    <button class="btn btn-warning" onclick='pagination(3,"{{currentjob_paginator.next_page}}")' >
+                                        Next Page
+                                    </button>
+                                    {% endif %}
+                        </div>
+                    </div>
+                    <div class="columns four">
+                        <h2 class="headding">Work History<span style="float: right;">
+                                                            <i class="fas fa-check-double requested status"></i>
+                                                            <i class="fas fa-ellipsis-h "></i>
+                                                            <i class="fas fa-check-double deliverd status"></i>
+                                                            <i class="fas fa-ellipsis-h "></i>
+                                                            <i class="fas fa-check-double accepted status"></i>
+                                                        </span>  
+                        </h2>
+                        <div class="row" style="padding: 1em 1em;">
+                          <table class="table table-hover table-striped history_table">
+                                <thead>
+                                    <tr>
+                                    <th scope="col">Job id</th>
+                                    <th scope="col">Seeker</th>
+                                    <th scope="col">Work-type</th>
+                                    <th scope="col" >Contact Cust.</th>
+                                    <th scope="col" >view Bill</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for value in serveredjob_list %}
+                                        <tr>
+                                            <th>
+                                                {{ value.job_id }} <span class="jobinfo" onclick='get_job_data("{{value.job_id}}")'><i class="fas fa-info-circle"></i></span>
+                                            </th>
+                                            <td>
+                                                <p class="left_img_cover" name="{{value.seeker.user.username}}" onclick='get_user_data("{{value.seeker.uid}}")'>
+                                                     <img class="card_images"  src="{{value.seeker.profile_pic.url}}" alt="">
+                                                </p>
+                                            </td>
+                                            <th >
+                                                {{ value.job_title }}
+                                            </th>
+                                            <td > <button class="btn btn-success"><i class="fas fa-phone-volume"></i></button> </td>
+                                            <td > <button class="btn btn-warning" onclick='get_bill_data("{{value.job_id}}")'><i class="fas fa-file-invoice-dollar"></i></button> </td>
+                                        </tr>
+                                    {% empty %}
+                                    <tr>
+                                            <th colspan="5">No data</th>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                </table>
+                        </div>
+                        <div class="padinator">
+                                    {% if serveredjob_paginator.previous_page %}
+                                    <button class="btn btn-warning" onclick='pagination(4,"{{serveredjob_paginator.previous_page}}")'>
+                                        Previous Page
+                                    </button>
+                                    {% endif %}
+                                    <span class="btn btn-info">{{ serveredjob_paginator.current_page}}/{{ serveredjob_paginator.total_page}} Pages</span>
+                                    {% if serveredjob_paginator.next_page %}
+                                    <button class="btn btn-warning" onclick='pagination(4,"{{serveredjob_paginator.next_page}}")'>
+                                        Next Page
+                                    </button>
+                                    {% endif %}
+                        </div>
+                    </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="pop-up-overlay">
+        
+    </div>
+
+    <div class="pop-up-user">
+            <div class="user_container">
+                <button class="popup-close-btn" onclick="close_popup_overlay('.pop-up-user')"><i class="fas fa-times fa-2x"></i></button>
+                <table class="table table-striped mt-2" style="width: 90%;">
+                <tbody>
+                    <tr>
+                        <th colspan="2">
+                            <img id="profile_pic" class="user_img" src="{% static 'one.jpg' %}" alt="">
+                        </th>
+                    </tr>
+                    <tr>
+                        <th scope="row">Username</th>
+                        <th id="username">..</th>
+                    </tr>
+                    <tr>
+                        <th scope="row">Phone No.</th>
+                        <td id="phonenumber">..</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Rating</th>
+                        <td id="rating">
+                           
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" >Rated user No.</th>
+                        <td id="rated_user_count">..</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" >Service Options</th>
+                        <td id="service_options">--</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Address</th>
+                        <td id="address">..</td>
+                    </tr>
+                   
+                </tbody>
+                </table>
+            </div>
+    </div>
+
+    <div class="pop-up-bill_genarate">
+        <div class="user_container">
+                <button class="popup-close-btn" onclick="close_popup_overlay('.pop-up-bill_genarate')"><i class="fas fa-times fa-2x"></i></button>
+                <h2 class="formhedding">Payment Form</h2>
+                <form style="width: 75%;margin: auto;padding: 1.5em 0em;">
+                    <strong>
+                        {% csrf_token %}
+                        {{ payment_form|crispy }}
+                    </strong>
+                    <button class="btn btn-primary">Submit</button>
+                </form>
+        </div>
+    </div>
+
+    <div class="pop-up-bill_view">
+         <div class="user_container">
+                <button class="popup-close-btn" onclick="close_popup_overlay('.pop-up-bill_view')"><i class="fas fa-times fa-2x"></i></button>
+                <table class="table table-striped mt-2" style="width: 80%;" >
+                <tbody>
+                    <tr>
+                        <th scope="row">Seeker</th>
+                        <th id="bill_username">..</th>
+                    </tr>
+                    <tr>
+                        <th scope="row">Phone No.</th>
+                        <td id="bill_phonenumber">..</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Payment Id</th>
+                        <td id="payment_id">..</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Job Id</th>
+                        <td id="bill_job_id">..</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" >Job Type</th>
+                        <td id="bill_job_type">..</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" >Job Desc.</th>
+                        <td id="bill_job_desc">..</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" >Labour Cost</th>
+                        <td id="labour_cost">..</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Resource Cost</th>
+                        <td id="resource_cost">..</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Total Cost</th>
+                        <td id="ammount">..</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Payment Status</th>
+                        <td id="payment_status">..</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Download Bill</th>
+                        <td id="payment_status"><a class="btn btn-primary" target="_blank" role="button" id="bill_pic" href=""><i class="fas fa-download"></i></a></td>
+                    </tr>
+                   
+                </tbody>
+                </table>
+         </div>
+    </div>
+
+    <div class="pop-up-job_info">
+         <div class="user_container">
+                <button class="popup-close-btn" onclick="close_popup_overlay('.pop-up-job_info')"><i class="fas fa-times fa-2x"></i></button>
+                <table class="table table-striped mt-2" style="width: 80%;" >
+                <tbody>
+                    <tr>
+                        <th style="width: 50%;">
+                            <img id="job_seeker_pic" style="width: 10em; height: 10em;" class="user_img" src="{% static 'one.jpg' %}" alt="">
+                        </th>
+                        <th style="width: 50%;">
+                            <img id="job_provider_pic" style="width: 10em; height: 10em;" class="user_img" src="{% static 'one.jpg' %}" alt="">
+                        </th>
+                    </tr>
+                    <tr>
+                        <th id="job_seeker_username">Yashvanth</th>
+                        <th id="job_provider_username">Yashvanth</th>
+                    </tr>
+                    <tr>
+                        <th scope="row">Job Id</th>
+                        <td  id="job_id">9535138437</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Phone No.</th>
+                        <td  id="job_phonenumber">9535138437</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Job Type</th>
+                        <td  id="job_title">Pending</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" >Job Desc.</th>
+                        <td  id="job_discription">Koteshwara Kundapura tq Udupi karnataka 576222.</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Job Status</th>
+                        <td  id="job_status">Pending</td>
+                    </tr>
+                   
+                </tbody>
+                </table>
+         </div>
+    </div>
+
+</body>
+
+<script>
+
+    function open_popup_overlay(pop_up){
+     $('.pop-up-overlay').css('transform','scale(1)')
+     $(pop_up).css('display','block')
+     $(pop_up).css('opacity','1')
+ }
+
+    function close_popup_overlay(pop_up){
+     $('.pop-up-overlay').css('transform','scale(0)')
+     $(pop_up).css('display','none')
+     $(pop_up).css('opacity','0')
+ }
+
+    function accept_jobrequest(jid){
+      $.ajax({
+          url : "{% url 'accept_work' %}",
+          type: "GET",
+          data : {'job_id':jid},
+          headers: {'X-CSRFToken':"{{ csrf_token }}"},
+          success: function(data){
+              window.location.href = "{% url 'home' %}"
+          },
+          error :function(){
+              alert("Something went wrong try after some time")
+          }
+
+      })
+  }
+
+    function reject_jobrequest(jid){
+      $.ajax({
+          url : "{% url 'reject_work' %}",
+          type:"GET",
+          data : {'job_id':jid},
+          headers: {'X-CSRFToken':"{{ csrf_token }}"},
+          success: function(data){
+              window.location.href = "{% url 'home' %}"
+          },
+          error :function(){
+              alert("Something went wrong try after some time")
+          }
+
+      })
+  }
+ 
+    function get_bill_data(jid){
+            $.ajax({
+            url : "{% url 'payment_info_ajax' %}",
+            type:'GET',
+            headers :{"X-CSRFToken":"{{ csrf_token }}"},
+            data: {'job_id': jid},
+            success : function(data){
+                for (let key in data) {
+                    if(key == 'bill_pic'){
+                            $('#'+String(key)).attr('href',data[key])
+                    }else{
+                            $('#'+String(key)).text(data[key])
+                    }
+                                    
+                }
+                open_popup_overlay('.pop-up-bill_view')
+            },
+            error : function(){
+                console.log("No data Received")
+            }
+            
+        })
+    }
+
+    function get_job_data(jid){
+        $.ajax({
+            url : "{% url 'job_info_ajax' %}",
+            type:'GET',
+            headers :{"X-CSRFToken":"{{ csrf_token }}"},
+            data: {'job_id': jid},
+            success : function(data){
+                for (let key in data) {
+                        if(key == 'job_seeker_pic' || key == 'job_provider_pic'){
+                            $('#'+String(key)).attr('src',data[key])
+                        }
+                        else{
+                            $('#'+String(key)).text(data[key])
+                        }     
+                }
+                open_popup_overlay('.pop-up-job_info')
+            },
+            error : function(){
+                console.log("No data Received")
+            }
+            
+        })
+    }
+
+    function genarate_bill_data(jid){
+        $('#id_job_id').val(jid)
+        $('#id_job_id').attr('readonly',true)
+        open_popup_overlay('.pop-up-bill_genarate')
+    }
+    
+    function get_user_data(uid){
+     $.ajax({
+         url : "{% url 'user_info_ajax' %}",
+         type:'GET',
+         headers :{"X-CSRFToken":"{{ csrf_token }}"},
+         data: {'user_id': uid},
+         success : function(data){
+             for (let key in data) {
+                    if(key == 'profile_pic'){
+                        $('#'+String(key)).attr('src',data[key])
+                    }
+                    else if(key == 'rating'){
+                        $('#'+String(key)).empty();
+                        for(let i=1; i<=5; i++){
+                            if( i <= data[key]){
+                                $('#'+String(key)).append('<span class="fa fa-star checked"></span>')
+                            }else{
+                                $('#'+String(key)).append('<span class="fa fa-star"></span>')
+                            }
+                        }
+                    }else{
+                        $('#'+String(key)).text(data[key])
+                    }     
+             }
+             open_popup_overlay('.pop-up-user')
+         },
+         error : function(){
+            console.log("No data Received")
+         }
+         
+     })
+ }
+
+    function logouts(){
+     var ans = confirm("{{ request.user.username }} sure you want to exit (Logout) ?")
+     if( ans == true){
+            window.location.href="{% url 'logout' %}"
+     }
+ }
+
+    function slidetab_one(){
+        activate_slide_btn(1);
+        $('.one').css('left','0%');
+        $('.two').css('left','100%');
+        $('.three').css('left','200%');
+        $('.four').css('left','300%');
+    }
+
+    function slidetab_two(){
+        activate_slide_btn(2);
+        $('.one').css('left','-100%');
+        $('.two').css('left','0%');
+        $('.three').css('left','100%');
+        $('.four').css('left','200%');
+    }
+
+    function slidetab_three(){
+        activate_slide_btn(3);
+        $('.one').css('left','-200%');
+        $('.two').css('left','-100%');
+        $('.three').css('left','0%');
+        $('.four').css('left','100%');
+    }
+
+    function slidetab_four(){
+        activate_slide_btn(4);
+        $('.one').css('left','-300%');
+        $('.two').css('left','-200%');
+        $('.three').css('left','-100%');
+        $('.four').css('left','0%');
+    }
+
+    function activate_slide_btn(btn_no){
+        var x = $('.tab_btn_group').children('.tab_btn')
+        for(let i=1;i<=x.length;i++){
+            if(i==btn_no){
+                $(x[i-1]).addClass('tab_btn_checked')
+            }else{
+                $(x[i-1]).removeClass('tab_btn_checked')
+            }
+        }
+    }
+
+    function user_paginator(data){
+        let obj_list = $('.user_paginator').find('.unit')
+        $(obj_list).remove()
+
+        for(var value in data['object_list']){
+            value = data['object_list'][value]
+            var html =` <div class="col-sm-3 unit">
+                            <div class="container mb-4" onclick='get_user_data("`+ value.uid +` ")'>
+                                <div class="text-content">
+                                    <h4 class="text-h4">`+value.username +`</h4>
+                                    <h4 class="text-h4">`+ value.phonenumber +`</h4>`
+
+            for(let i=1;i<=5;i++){
+                if(i <= value.rating)
+                    html=html.concat(`<span class="fa fa-star checked"></span>`)
+                else
+                    html=html.concat(`<span class="fa fa-star"></span>`)
+            }
+
+            html = html.concat(`<span>( `+ value.rated_user_count +` )</span>
+                                                    </div>
+                                                    <div class="img-content">
+                                                        <img src="`+ value.profile_pic +`" alt="">
+                                                    </div>
+                                                </div>
+                                            </div>`)      
+
+            $('.user_paginator').append(html)                                     
+        }
+
+        let page = $('.one').find('.padinator *')
+        $(page).remove()
+
+        html =" "
+
+        if (data.previous_page)
+           { html = `<button class="btn btn-warning" onclick='pagination(1,"`+data.previous_page+`")'>
+                                        Previous Page </button>`
+           }
+
+        html=html.concat(`<span class="btn btn-info">`+ data.current_page+` / `+ data.total_page+` Pages</span>`)
+        
+        if (data.next_page)
+            {
+                html= html.concat(`<button class="btn btn-warning" onclick='pagination(1,"`+data.next_page+`")'>
+                                        Next Page
+                                    </button>`)
+            }
+
+        $('.one').find('.padinator').append(html)
+    }
+
+    function job_request_paginator(data){
+        let obj_list = $('.two').find('tbody').find('tr')
+        $(obj_list).remove()
+
+        let table_body = $('.two').find('tbody')
+        for( var value in data['object_list']){
+            value = data['object_list'][value]
+            html =  ` <tr>
+                            <th>
+                                `+ value.job_id +` <span class="jobinfo" onclick='get_job_data("`+value.job_id+`")'><i class="fas fa-info-circle"></i></span>
+                            </th>
+                            <td>
+                                <p class="left_img_cover" name="`+value.seeker_username+`" onclick='get_user_data("`+value.seeker_id+`")'>
+                                            <img class="card_images" src="`+value.seeker_pic+`" alt="">
+                                </p>
+                            </td>
+                            <th >
+                                `+value.job_title +`
+                            </th>
+                            <td > <button class="btn btn-warning" onclick='accept_jobrequest("`+ value.job_id +`")'><i class="fas fa-check"></i> </button> </td>
+                            <td > <button class="btn btn-danger"  onclick='reject_jobrequest("`+ value.job_id +`")'> <i class="fas fa-times"></i> </button> </td>
+                    </tr>`
+            $(table_body).append(html)   
+        }
+
+        let paginator = $('.two').find('.padinator *')
+        $(paginator).remove()
+
+        html =" "
+        if (data.previous_page !=null)
+            html = `<button class="btn btn-warning" onclick='pagination(2,"`+data.previous_page+`")'>
+                                        Previous Page </button>`
+            html = html.concat(`<span class="btn btn-info">`+ data.current_page+` / `+ data.total_page+` Pages</span>`)
+        if (data.next_page !=null)
+            html= html.concat(`<button class="btn btn-warning" onclick='pagination(2,"`+data.next_page+`")'>
+                                        Next Page
+                                    </button>`
+
+        )
+        $('.two').find('.padinator').append(html)
+    }
+
+    function job_accept_paginator(data){
+        let obj_list = $('.three').find('tbody').find('tr')
+        $(obj_list).remove()
+
+        let table_body = $('.three').find('tbody')
+        for( var value in data['object_list']){
+            value = data['object_list'][value]
+            html =  ` <tr>
+                            <th>
+                                `+ value.job_id +` <span class="jobinfo" onclick='get_job_data("`+value.job_id+`")'><i class="fas fa-info-circle"></i></span>
+                            </th>
+                            <td>
+                                <p class="left_img_cover" name="`+value.seeker_username+`" onclick='get_user_data("`+value.seeker_id+`")'>
+                                            <img class="card_images" src="`+value.seeker_pic+`" alt="">
+                                </p>
+                            </td>
+                            <th >
+                                `+value.job_title +`
+                            </th>
+                            <td > <button class="btn btn-success" ><i class="fas fa-phone-volume"></i></button> </td>
+                            <td > <button class="btn btn-warning" onclick='genarate_bill_data("`+ value.job_id +`")'> <i class="fas fa-file-invoice-dollar"></i></button> </td>
+                    </tr>`
+            $(table_body).append(html)   
+        }
+
+        let page =$('.three').find('.padinator *')
+        $(page).remove()
+
+        html =" "
+        if (data.previous_page )
+            html = `<button class="btn btn-warning" onclick='pagination(3,"`+data.previous_page+`")'>
+                                        Previous Page </button>`
+            html = html.concat(`<span class="btn btn-info">`+data.current_page+` / `+ data.total_page+` Pages</span>`)
+        if (data.next_page )
+            html= html.concat(`<button class="btn btn-warning" onclick='pagination(3,"`+data.next_page+`")'>
+                                        Next Page
+                                    </button>`
+
+        )
+        $('.three').find('.padinator').append(html)
+
+
+    }
+
+    function job_done_paginator(data){
+        let obj_list = $('.four').find('tbody').find('tr')
+        $(obj_list).remove()
+
+        let table_body = $('.four').find('tbody')
+        for( var value in data['object_list']){
+            value = data['object_list'][value]
+            html =  ` <tr>
+                            <th>
+                                `+ value.job_id +` <span class="jobinfo" onclick='get_job_data("`+value.job_id+`")'><i class="fas fa-info-circle"></i></span>
+                            </th>
+                            <td>
+                                <p class="left_img_cover" name="`+value.seeker_username+`" onclick='get_user_data("`+value.seeker_id+`")'>
+                                            <img class="card_images" src="`+value.seeker_pic+`" alt="">
+                                </p>
+                            </td>
+                            <th >
+                                `+value.job_title +`
+                            </th>
+                            <td > <button class="btn btn-success" ><i class="fas fa-phone-volume"></i></button> </td>
+                            <td > <button class="btn btn-warning" onclick='get_bill_data("`+ value.job_id +`")'> <i class="fas fa-file-invoice-dollar"></i></button> </td>
+                    </tr>`
+
+            $(table_body).append(html)   
+        }
+
+        let paginator = $('.four').find('.padinator *')
+        $(paginator).remove()
+
+        html =" "
+        if (data.previous_page !=null)
+            html = `<button class="btn btn-warning" onclick='pagination(4,"`+data.previous_page+`")'>
+                                        Previous Page</button>`
+        html = html.concat(`<span class="btn btn-info">`+ data.current_page+` / `+ data.total_page+` Pages</span>`)
+        
+        if (data.next_page !=null)
+            html= html.concat(`<button class="btn btn-warning" onclick='pagination(4,"`+data.next_page+`")'>
+                                        Next Page
+                                    </button>`
+
+        )
+        $('.four').find('.padinator').append(html)
+    }
+
+    function pagination(dashbordoption,curentpage){
+        let dashbord_option = Number(dashbordoption)
+        dashbordoption =dashbord_option
+        let curent_page = Number(curentpage)
+        var model = null
+        if(dashbord_option==1) {model='user',dashbord_option=null}
+        else if(dashbord_option==2) {model=null,dashbord_option='request'}
+        else if(dashbord_option==3) {model=null,dashbord_option='accept'}
+        else if(dashbord_option==4) {model=null,dashbord_option='done'}
+
+        var url = new URL(window.location.href);
+        var search_query = null
+        search_query=url.searchParams.get("search");
+
+        $.ajax({
+            type:"GET",
+            url:"{% url 'ajax_pagination'%}",
+            headers : {"X-CSRFToken":"{{ csrf_token}}"},
+            data : {'dashoption':dashbord_option,'currentpage':curent_page,'model':model,'search_query':search_query},
+            success :function(data){
+                 if(dashbordoption==1) { user_paginator(data)}
+                 else if(dashbordoption==2) {job_request_paginator(data)}
+                 else if(dashbordoption==3) {job_accept_paginator(data)}
+                 else if(dashbordoption==4) {job_done_paginator(data)}
+            },
+            error: function(){
+                alert("Some problem ocuured try again after some time")
+            }
+        })
+    }
+
+</script>
+
+</html>
