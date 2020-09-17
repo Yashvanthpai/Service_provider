@@ -1,4 +1,4 @@
-{% extends 'one.html' %} 
+{% extends 'index.html' %} 
 {% load crispy_forms_tags %} 
 {% load static %}
 {% block login %}   
@@ -70,7 +70,9 @@
         overflow-y: scroll; 
         scrollbar-width: thin;
     }
-
+    #div_id_service_catogory{
+        display: none;
+    }
 
 </style>
 
@@ -83,9 +85,22 @@
                 <form class="forms mt-4 mb-4" method="POST" enctype="multipart/form-data">
                     <h2 style="padding: 0; font-weight: 650;">Register</h2>
                     {% csrf_token %} {{ djangouser|crispy }} {{ appuser|crispy }}
-                    <button class="form-btn">Register</button>
+                    <button class="form-btn" type="submit">Register</button>
                 </form>
         </div>
     </div>
 </div>
+{% endblock %}
+{% block javascripts %}
+    <script>
+         $("#id_user_satus").on('change',(event) =>{
+             if(event.target.value === 'provider'){
+                 $('#div_id_service_catogory').css('display','block')
+             }else{
+                 $('#div_id_service_catogory').css('display','none')
+             }
+         })
+    </script>
+   
+
 {% endblock %}

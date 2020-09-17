@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+{% load custumTags %}
+{% load static %}
+{% load crispy_forms_tags %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" data-auto-replace-svg="nest"></script>
+
+    <style>
+     * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-family: 'Roboto', ;
+    }
+    .maincontainer {
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+        background-image: url("{% static 'background.jpg' %}");
+        background-position:center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .content-container {
+        height: 85vh;
+        width: 90vW;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
+        display: flex;
+        justify-content: center;
+        position: relative;
+    }
+    .hedding-bk{
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 250px;
+        height: 3em;
+        border-radius: 0.45em;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
+        transform: translate(-50%,-50%);
+        background-color: white;
+    }
+    .hedding{
+        font-size: 1.4em;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        text-transform: uppercase;
+        font-style: italic;
+        font-weight: 650;
+        text-shadow: 5px 4px 3px rgba(0, 0, 0, 0.41);
+    }
+    .faws-icon{
+        font-size: 2.5em;
+    }
+
+    .containers{
+        padding: 1.5em 1em;
+        height: 100%;
+        width: 90%;
+        margin: auto;
+        position: absolute;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+
+    .service_tags{
+        font-size: 1.0em;
+        font-weight: 600;
+        text-shadow: 5px 4px 2px rgba(0, 0, 0, 0.644);
+    }
+
+    .card-container{
+        width: 550px;
+        height: 40%; 
+        margin: 1rem 0rem !important;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .20), 0 6px 20px 0 rgba(0, 0, 0, .19);
+        border-radius: .5em;
+        position: relative;
+    }
+    
+    .card-container::before{
+        content: attr(data-title);
+        position: absolute;
+        left: 50%;
+        top: 20%;
+        width: 200px;
+        height: 1.6em;
+        border-radius: .25em;
+        background-color: white;
+        text-align: center;
+        color: black;
+        z-index: -1;
+        transform: translate(-50%,15%);
+        transition: top ease-in-out 250ms;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .20), 0 6px 20px 0 rgba(0, 0, 0, .19);
+    }
+
+    .card-container::after{
+        content: " ";
+        width: 1em;
+        height: 1em;
+        background-color: rgb(124, 124, 124);
+        position: absolute;
+        left: 50%;
+        top: 10%;
+        opacity: 0;
+        transform:  translate(-50%,-15%) rotate(45deg);
+        transition: opacity top ease-in-out 15ms;
+        transition-delay: 0ms;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .20), 0 6px 20px 0 rgba(0, 0, 0, .19);
+
+    }
+    .card-container:hover::before{
+         top: -20%;
+         z-index: 10;
+    }
+    .card-container:hover::after{
+         transition-delay: 250ms;
+         top:-10%;
+         opacity: 1;
+         transition: opacity top ease-in-out 15ms;
+    }
+    .card-leftpart{
+        flex: 1;
+        align-self: stretch;
+        overflow-y: hidden;
+        scrollbar-width: thin;
+        padding: 0em;
+        background-color: #717482;
+        color: white;
+        position: relative;
+        box-sizing: content-box;
+    }
+    .card-leftpart:hover{
+        overflow-y: auto;
+    }
+    
+    
+    .card-rightpart{
+        flex-basis: 25%;
+        padding: .5em;
+        background-color: whitesmoke;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        align-self: stretch;
+        
+    }
+  
+
+    .filter_container{
+        position: absolute;
+        right: 0;
+        transform: translate(-25%);
+        width: 175px;
+    }
+    #filter_rating,#filter_cat{
+        width: 175px;
+        background-color: white;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .050), 0 6px 20px 0 rgba(0, 0, 0, .2);
+
+    }
+    .text-h4{
+        width: 100%;
+        font-size: .9em;
+        text-align: center;
+    }
+    .commenter{
+        line-height: 22px;
+        font-size: 1em;
+        font-weight: 600;
+        padding: 0.1em 2em;
+        margin: 0;
+    }
+    .commentdate{
+        float: right;
+        font-size: 1em;
+        word-break: break-all;
+    }
+    table{
+        table-layout: fixed; 
+        width:350px;
+        margin-left: 1.5em;
+        margin-top: .75em;
+        margin-bottom: .75em;
+    }
+    tr{
+        border-bottom: 1px solid rgb(168, 168, 168);
+        vertical-align: top;
+    }
+    tr:last-child{
+        border: none;
+    }
+    th{
+        font-size: .9em;
+        font-weight: 550;
+        width: 40%;
+        text-align: left;
+    }
+    td{
+        text-align: left;
+        word-break: break-all;
+    }
+    .rightside_image{
+        width: 6em;
+        height: 7em;
+        border-radius: .45em;
+        object-fit: cover;
+    }
+    .back{
+        height: 32px;
+        line-height: 16px;
+        margin-top: 1em;
+        font-weight: 600;
+        color: black !important;
+    }
+   
+    .checked {
+        color: orange;
+      }
+    .errormsg{
+        text-shadow: 5px 3px 3px rgba(0, 0, 0, 0.719);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+        font-size: 1.5em;
+        word-break: break-all;
+    }
+     .jobback{
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translate(-50%,50%);
+        width: 150px;
+        height: 40px;
+        line-height: 20px;
+        text-transform: uppercase;
+        font-size: 1.2em;
+        font-style: italic;
+        font-weight: 650;
+        color: black !important;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .050), 0 6px 20px 0 rgba(0, 0, 0, .2);
+        z-index: 15;
+    }
+   
+    </style>
+</head>
+<body>
+     <div class="maincontainer" >
+        <div class="content-container" >
+           <span class="hedding-bk"></span>
+           <h1 class="hedding">Job Details</h1>
+           <a onclick="goback()" class="btn btn-light jobback">Go Back</a>
+
+            <div class="containers">
+                  <div class="card-container " onclick="gotoUser('{{Jobobj.provider.uid}}')" data-title="Service Provider" style="cursor: pointer;">
+                                    <div class="card-leftpart">
+                                        <table> 
+                                            <tr>
+                                                <th>Name</th>
+                                                <td>{{Jobobj.provider.user.username|title}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Service Type</th>
+                                                <td>{{Jobobj.provider.service_catogory|title}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Phone Number</th>
+                                                <td>{{Jobobj.provider.phonenumber}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Rating</th>
+                                                <td>
+                                                    {% for x in "stars" %}
+                                                        {% if forloop.counter <= Jobobj.provider.rating %}
+                                                            <span class="fa fa-star checked"></span>
+                                                        {% else %}
+                                                            <span class="fa fa-star"></span>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Description</th>
+                                                <td>{{Jobobj.provider.description}}</td>
+                                            </tr>
+                                        </table> 
+                                    </div>
+                                    <div class="card-rightpart">
+                                           <img class="rightside_image" src="{{Jobobj.provider.profile_pic.url}}" alt="">  
+                                    </div>
+                  </div> 
+                  <div class="card-container " data-title="Service Seeker">
+                                     <div class="card-rightpart">
+                                            <img class="rightside_image" src="{{Jobobj.seeker.profile_pic.url}}" alt=""> 
+                                    </div>
+                                    <div class="card-leftpart">
+                                        <table> 
+                                            <tr>
+                                                <th>Name</th>
+                                                <td>{{Jobobj.seeker.user.username|title}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Phone Number</th>
+                                                <td>{{Jobobj.seeker.phonenumber}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Rate Status</th>
+                                                <td>
+                                                    {% if Jobobj.job_id|Check_rated == 'no' %}
+                                                        Not yet Rated
+                                                    {% else %} 
+                                                        {% for x in "stars" %}
+                                                            {% if forloop.counter <= Jobobj.comment.rating %}
+                                                                <span class="fa fa-star checked"></span>
+                                                            {% else %}
+                                                                <span class="fa fa-star"></span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <th>Address</th>
+                                                <td>{{Jobobj.seeker.address}}</td>
+                                            </tr>
+                                        </table> 
+                                    </div>
+                                   
+                  </div>
+                  <div class="card-container " data-title="Job Details">
+                                    <div class="card-leftpart">
+                                        <table> 
+                                            <tr>
+                                                <th>Job Type</th>
+                                                <td>{{Jobobj.job_title|title}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Job Title</th>
+                                                <td>{{Jobobj.jobName|title}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Date</th>
+                                                <td>{{Jobobj.assignDate}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Job Status</th>
+                                                <td>{{Jobobj.job_status}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Bill Status</th>
+                                                <td>{% if Jobobj.payment %}
+                                                        Bill Genarated Already 
+                                                    {% else %} 
+                                                        Bill yet Genarate
+                                                    {%endif%}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Description</th>
+                                                <td>{{Jobobj.job_discription}}</td>
+                                            </tr>
+                                        </table> 
+                                    </div>
+                                    <div class="card-rightpart">
+                                         {% if Jobobj.job_title == "electrician" %}
+                                            <i class="fas fa-charging-station faws-icon"></i>
+                                        {% elif Jobobj.job_title == "furniture" %}
+                                                <i class="fas fa-chair faws-icon"></i>
+                                        {% elif Jobobj.job_title == "painting" %}
+                                                <i class="fas fa-paint-roller faws-icon"></i>
+                                        {% elif Jobobj.job_title == "cleaning" %}
+                                                <i class="fas fa-broom faws-icon"></i>
+                                        {% else%}
+                                                <i class="fas fa-wrench faws-icon"></i>
+                                        {% endif %} 
+                                    </div>
+                  </div>
+                  <div class="card-container " data-title="Bill Details">
+                        <div class="card-leftpart" >
+                            {% if Jobobj.payment %}
+                                <table style="margin-left: 7em;"> 
+                                <tr>
+                                    <th>Payment Status</th>
+                                    <td>{{Jobobj.payment.payment_status|title}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Date</th>
+                                    <td>{{Jobobj.payment.genaratedDate}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Labour Cost</th>
+                                    <td>Rs. {{Jobobj.payment.labour_cost}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Resource Cost</th>
+                                    <td>Rs. {{Jobobj.payment.resource_cost}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Total Cost</th>
+                                    <td>Rs. {{Jobobj.payment.ammount}}</td>
+                                </tr>
+                                <tr>
+                                    <th>View Bill</th>
+                                    <td><a href="{{Jobobj.payment.bill_pic.url}}" class="btn btn-light back" >View Bill</a></td>
+                                </tr>
+                            </table>                     
+                            {% else %} 
+                                  <h1 class="errormsg">Bill is not yet genarated.</h1>                      
+                            {% endif %}
+                            
+                        </div>
+                                    
+                  </div>  
+            </div> 
+                
+        </div>
+    </div>
+    <script>
+         function gotoUser(uid){
+                localStorage.setItem("backUrl",window.location.href)
+                window.location.href = "{% url 'userhome' user_id='123' %}".replace(/123/,uid)
+        }
+        const goback = ()=>{
+            window.location.href = localStorage.getItem("jobbackUrl")
+        }
+    </script>  
+  
+</body>
+</html>

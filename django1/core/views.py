@@ -1,16 +1,17 @@
 from django.shortcuts import render,HttpResponseRedirect,HttpResponse
 from django.urls import reverse
-from .forms import App_user_form,User_form,Payment_form
+from .forms import App_user_form,User_form,Payment_form,jobAssignmentForm,Comment_form
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth.decorators import login_required
-from .models import Applicationuser,Payment,Job
+from .models import Applicationuser,Payment,Job,Comment
 from django.db.models import Q 
 from json import dumps
 from django.forms.models import model_to_dict
+from django.core.paginator import Paginator
 # Create your views here.
 
 def index(request):
-    return render(request,'one.html')
+    return render(request,'index.html')
 
 
 def register(request):
@@ -36,67 +37,6 @@ def register(request):
     
     return render(request,'register.html',context)
             
-@login_required
-def home(request):
-    context={}
-    page_list_count = {}
-    context_key = ['user_paginator','job_request_paginator','currentjob_paginator','serveredjob_paginator']
- 
-    if request.method == "POST":
-        payment_obj =  Payment_form(request.POST,request.FILES)
-        if payment_obj.is_valid():
-            payment_obj.save()
-        else:
-            context['payment_form'] =payment_obj
-    
-    obj = Applicationuser.objects.all()
-    search_query = request.GET.get('search',None)
-    if search_query:
-        obj = obj.filter(Q(user__username__icontains =search_query)|
-                        Q(service_catogory__icontains = search_query)|
-                        Q(user_satus__icontains =search_query)|
-                        Q(rating__icontains =search_query))
-    
-    context['userlist']=obj
-    page_list_count['userlist'] = len(obj)
-
-    work_dic= { 'request': 'job_request_list',
-                'accept': 'currentjob_list',
-                'done':'serveredjob_list'
-              }
-
-    for key , value in work_dic.items():
-        list_obj = Job.objects.filter(job_status=key)
-        if search_query:
-            list_obj = list_obj.filter(
-                        Q(seeker__user__username__icontains =search_query)|
-                        Q(job_title__icontains =search_query)|
-                        Q(job_id__icontains =search_query)|
-                        Q(job_discription__icontains =search_query))
-
-        context[value]=list_obj
-        page_list_count[value]=len(list_obj)
-
-    i=0
-    current_page=1
-    object_per_page = 10
-    for key , value in page_list_count.items():
-        
-        page_obj= {
-            'previous_page': None,
-            'current_page': 1,
-            'next_page': 2 if current_page * object_per_page < value else None,
-            'offset': 0,
-            'limit':  object_per_page if current_page * object_per_page <= value else value,
-            'total_page': value// object_per_page + 1 if value % object_per_page !=0 else value // object_per_page,
-        }
-        context[context_key[i]] = page_obj
-        i+=1
-        context[key] = context[key][int(page_obj.get('offset')):int(page_obj.get('limit'))]
-
-
-    context['payment_form'] = context.get('payment_form',Payment_form())
-    return render(request,'Logedin.html',context)
 
 @login_required
 def logout(request):
@@ -104,51 +44,6 @@ def logout(request):
     return HttpResponseRedirect(reverse('startpoint'))
 
 
-@login_required
-def user_info_ajax(request):
-    data = None
-    if request.method =="GET" and request.is_ajax():
-        user_obj_md = Applicationuser.objects.get(uid=int(request.GET.get('user_id')))
-        user_obj = model_to_dict( user_obj_md )
-        user_obj['profile_pic'] = user_obj['profile_pic'].url
-        user_obj['username'] = user_obj_md.user.username 
-        
-        data = dumps(user_obj)
-
-    return HttpResponse(data,content_type="application/json")
-
-@login_required
-def job_info_ajax(request):
-    data = None
-    if request.method =="GET" and request.is_ajax():
-        job_obj_db = Job.objects.get(job_id=int(request.GET.get('job_id')))
-        job_obj = model_to_dict( job_obj_db )
-        job_obj['job_phonenumber'] = job_obj_db.seeker.phonenumber
-        job_obj['job_provider_username'] = job_obj_db.provider.user.username
-        job_obj['job_seeker_username'] = job_obj_db.seeker.user.username
-        job_obj['job_provider_pic'] = job_obj_db.provider.profile_pic.url
-        job_obj['job_seeker_pic'] = job_obj_db.seeker.profile_pic.url
-        
-        data = dumps(job_obj)
-
-    return HttpResponse(data,content_type="application/json")
-
-@login_required
-def payment_info_ajax(request):
-    data = None
-    if request.method =="GET" and request.is_ajax():
-        payment_obj_db = Payment.objects.get(job__job_id=int(request.GET.get('job_id')))
-        payment_obj = model_to_dict( payment_obj_db )
-        payment_obj['bill_pic'] = payment_obj['bill_pic'].url
-        payment_obj['bill_job_id']= int(request.GET.get('job_id'))
-        payment_obj['bill_job_type']= payment_obj_db.job.job_title
-        payment_obj['bill_job_desc']= payment_obj_db.job.job_discription
-        payment_obj['bill_phonenumber']= payment_obj_db.job.seeker.phonenumber
-        payment_obj['bill_username']= payment_obj_db.job.seeker.user.username
-        
-        data = dumps(payment_obj)
-
-    return HttpResponse(data,content_type="application/json")
 
 @login_required
 def accept_work_ajax(request):
@@ -165,72 +60,171 @@ def reject_work_ajax(request):
     return HttpResponse(None)
 
 
+
+
 @login_required
-def ajax_pagination(request):
-    search_query = request.GET.get('search_query',None)
-    object_per_page = 10
-    if request.method=="GET" and request.is_ajax():
-        obj_db = None
-        obj_list =[]
-        if str(request.GET.get('model')) == "user":
-            obj_db = Applicationuser.objects.all()
+def seeker_home(request,service_catogory = None):
+    Number_of_objects_per_page = 15
+    context={}
+    
+    if request.method == "POST":
+        jobAssignmentForm_obj = jobAssignmentForm(request.POST)
+        if jobAssignmentForm_obj.is_valid():
+            jobAssignmentForm_obj.save()
+    else:
+        jobAssignmentForm_obj = jobAssignmentForm()
+    if service_catogory == "All":
+        obj = Applicationuser.objects.all()
+    else:
+        obj = Applicationuser.objects.filter(Q(service_catogory = service_catogory.lower())) or None
+    search_query = request.GET.get('search',None)
+    if search_query:
+        obj = obj.filter(Q(user__username__icontains =search_query)|
+                        Q(service_catogory__icontains = search_query)|
+                        Q(user_satus__icontains =search_query)|
+                        Q(rating__icontains =search_query))
+    
+    if obj:
+        paginated_object_list = Paginator(obj,Number_of_objects_per_page)
+        page_number =  request.GET.get('page') 
+        obj = paginated_object_list.get_page(page_number)
+    
+    context['userlist']=obj
 
-            if search_query:
-                obj_db = obj_db.filter(Q(user__username__icontains =search_query)|
-                                Q(service_catogory__icontains = search_query)|
-                                Q(user_satus__icontains =search_query)|
-                                Q(rating__icontains =search_query))
 
-            total_obj = len(obj_db)
-            current_page = int(request.GET.get('currentpage'))
-            dic_page = {
-                'previous_page': current_page-1 if (current_page-1) > 0 else None,
-                'current_page': current_page,
-                'next_page': current_page+1 if current_page* object_per_page < total_obj else None,
-                'offset': (current_page-1)* object_per_page,
-                'limit': (current_page)* object_per_page  if (current_page)* object_per_page  <= total_obj else total_obj,
-                'total_page': total_obj// object_per_page + 1 if total_obj % object_per_page !=0 else total_obj // object_per_page,
-            }
+    context['form'] =jobAssignmentForm_obj
+    return render(request,'seeker.html',context)
 
-            obj_db = obj_db[int(dic_page['offset']): int(dic_page['limit'])]
 
-            for obj in obj_db:
-                obj_d = model_to_dict(obj)
-                obj_d['username']= obj.user.username
-                obj_d['profile_pic'] = obj.profile_pic.url
-                obj_list.append(obj_d)
-        
+@login_required
+def seeker_history(request,service_catogory=None,*args,**kwargs):
+    Number_of_objects_per_page = 15
+    context={}
+    
+    if service_catogory == "All":
+        obj = Job.objects.filter(seeker__user__username=request.user.username)
+    else:
+        obj = Job.objects.filter(   Q(seeker__user__username=request.user.username) &
+                                    Q(job_title = service_catogory.lower())) or None
+    
+    filter_query  =  request.GET.get('filter_query',"request")
+
+    if filter_query and obj:
+        obj = obj.filter(job_status=filter_query) 
+    
+    search_query = request.GET.get('search',None)
+    if search_query and obj:
+        obj = obj.filter(Q(job_title__icontains =search_query)|
+                        Q(job_discription__icontains = search_query)|
+                        Q(provider__user__username__icontains =search_query))    
+    if obj:
+        paginated_object_list = Paginator(obj,Number_of_objects_per_page)
+        page_number =  request.GET.get('page') 
+        obj = paginated_object_list.get_page(page_number)
+    
+    context['joblist']=obj
+
+    return render(request,'seekerHistory.html',context)
+
+@login_required
+def provider_home(request,service_status="request",*args,**kwargs):
+    Number_of_objects_per_page = 15
+    context={}
+
+    
+    if request.method == "POST":
+        ratingform = Comment_form(request.POST or None)
+        billform = Payment_form(request.POST,request.FILES or None)
+
+        if billform.is_valid():
+                billform.save()
+                billform = Payment_form()
+                ratingform = Comment_form()
+
+        elif ratingform.is_valid():
+            ratingform.save()
+            ratingform = Comment_form()
+            billform = Payment_form()
+
+    else:
+        billform = Payment_form()
+        ratingform = Comment_form()
+
+    obj = Job.objects.filter( Q(provider__user__username=request.user.username) &
+                              Q(job_status=service_status))
+    
+    search_query = request.GET.get('search',None)
+    if search_query and obj:
+        obj = obj.filter(Q(job_title__icontains =search_query)|
+                        Q(job_discription__icontains = search_query)|
+                        Q(seeker__user__username__icontains =search_query))    
+    if obj:
+        paginated_object_list = Paginator(obj,Number_of_objects_per_page)
+        page_number =  request.GET.get('page') 
+        obj = paginated_object_list.get_page(page_number)
+    
+    context['joblist']=obj
+    context['billform']=billform
+    context['ratingform']=ratingform
+
+    
+    return render(request,'provider.html',context)
+
+def user_page(request,user_id=None):
+    # request.user.applicationuser.uid
+    username = Applicationuser.objects.get(uid=user_id).user.username 
+    Number_of_objects_per_page = 16
+    context={}
+    obj = Applicationuser.objects.get(uid=user_id )
+    if request.method == "POST":
+        form = App_user_form(request.POST,request.FILES,instance=obj)
+        if form.is_valid():
+            form.save()
+    else:
+        form = App_user_form( instance=obj)
+    
+    commentobj = Comment.objects.filter(job__provider__user__username=username)
+
+    filter_rating_query = request.GET.get("filter_rating","accending")
+    if filter_rating_query == "accending":
+        commentobj = Comment.objects.filter(job__provider__user__username=username).order_by('rating','cid')
+    else:
+        commentobj = Comment.objects.filter(job__provider__user__username=username).order_by('-rating','cid')
+
+    filter_category_query = request.GET.get("filter_cat","all")
+    if filter_category_query == "all":
+        pass
+    else:
+        commentobj = commentobj.filter(Q(job__job_title=filter_category_query))
+
+    
+    if commentobj:
+        paginated_object_list = Paginator(commentobj,Number_of_objects_per_page)
+        page_number =  request.GET.get('page') 
+        commentobj = paginated_object_list.get_page(page_number)
+
+    try:
+        if int(request.user.applicationuser.uid) == int(user_id):
+            context["thirdperson"] = "self"
         else:
-            obj_db = Job.objects.filter(job_status=request.GET.get('dashoption'))
+            context["thirdperson"] = "thirdperson"
+    except Exception as p:
+        context["thirdperson"] = "thirdperson"
+    context['userobj']= obj
+    context['commentobj'] = commentobj
+    context['form']=form
+    context['image']= Applicationuser.objects.get(uid=user_id).profile_pic.url
+    return render(request,'user.html',context)
 
-            if search_query:
-                obj_db = obj_db.filter(
-                        Q(seeker__user__username__icontains =search_query)|
-                        Q(job_title__icontains =search_query)|
-                        Q(job_id__icontains =search_query)|
-                        Q(job_discription__icontains =search_query))
+def job_info(request,job_id=None):
+    context={}
+    jobj = Job.objects.get(job_id=job_id)
+    context["Jobobj"]=jobj    
+    return render(request,"jobinfo.html",context)
 
-            total_obj = len(obj_db)
-            current_page = int(request.GET.get('currentpage'))
 
-            dic_page = {
-                'previous_page': current_page-1 if (current_page-1) > 0 else None,
-                'current_page': current_page,
-                'next_page': current_page+1 if current_page* object_per_page < total_obj else None,
-                'offset': (current_page-1)* object_per_page,
-                'limit': (current_page)* object_per_page if (current_page)* object_per_page  <= total_obj else total_obj,
-                'total_page': total_obj// object_per_page + 1 if total_obj % object_per_page !=0 else total_obj // object_per_page,
-            }
-
-            obj_db = obj_db[int(dic_page['offset']): int(dic_page['limit'])]
-
-            for obj in obj_db:
-                obj_d = model_to_dict(obj)
-                obj_d['seeker_username']= obj.seeker.user.username
-                obj_d['seeker_id'] = obj.seeker.uid
-                obj_d['seeker_pic'] = obj.seeker.profile_pic.url
-                obj_list.append(obj_d)
-        
-        dic_page['object_list'] = obj_list
-
-        return HttpResponse(dumps(dic_page),content_type="application/json")
+@login_required
+def Cancel_work(request):
+    if request.is_ajax():
+        Jobobj = Job.objects.filter(job_id=int(request.GET.get('job_id'))).delete()
+    return HttpResponse(None)

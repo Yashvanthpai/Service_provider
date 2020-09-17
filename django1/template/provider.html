@@ -1,0 +1,923 @@
+<!DOCTYPE html> 
+{% load custumTags %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" data-auto-replace-svg="nest"></script>
+</head>
+
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-family: 'Roboto', ;
+    }
+    
+    .maincontainer {
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+        background-image: url("{% static 'background.jpg' %}");
+        background-position:center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    .asteriskField{
+        display: none;
+    }
+    
+
+    
+    .nav-container {
+        position: sticky;
+        width: 100%;
+        height: 3em;
+        background-color: transparent;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+    }
+    
+    .navlist {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        flex-basis: 40%;
+        margin-top: 1em;
+        height: 100%;
+    }
+    
+    .navlist .nav-li {
+        list-style: none;
+        position: relative;
+    }
+    
+    .navlist .nav-li::after {
+        content: " ";
+        position: absolute;
+        left: 0;
+        bottom: -3px;
+        border-bottom: 2px solid #9398ad;
+        width: 100%;
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform ease-in 150ms;
+    }
+    
+    .navlist .nav-li:hover::after {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+    
+    .navlist .nav-a {
+        text-decoration: none;
+        font-family: 'Open Sans', ;
+        letter-spacing: .05em;
+        font-size: 1em;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #9398ad;
+    }
+    
+    .content-container {
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+    }
+    .slidebar{
+        max-height: 100vh;
+        overflow: hidden;
+        flex-basis: 250px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19),0 6px 20px 0 rgba(0, 0, 0, .20);
+    }
+    .actual_content{
+        flex: 1;
+        max-height: 100%;
+        overflow: hidden;
+        scrollbar-width: thin;
+    }
+
+    .search-form{
+        width: 95%;
+        height: 3em;
+        margin: auto;
+        margin-top: 1.5em;
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    #search-label{
+        position: absolute;
+        background-color: #464850;
+        padding: 10px 15px;
+        border-radius: 35px;
+        color: white;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        margin: 0;
+    }
+    #search{
+        background-color: #46485086;
+        text-align: center !important;
+        border: 2px solid #46485086;
+        border-radius:15px;
+        height: 2em;
+        width: 100%;
+    }
+    #search::placeholder{
+        color: white
+    }
+
+
+    .rows{
+        width: 100%;
+        height: calc(100% - 3.5em );
+        overflow: hidden;
+        background-color: transparent;
+        position: relative;
+    }
+
+    .columns{
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        scrollbar-width: thin;
+    }
+
+    .one {
+        position:absolute;
+        top:0;
+        left:0%;
+        transition:left  ease-in 100ms;
+    }
+
+    .text-h4{
+        font-size: 1.0em;
+        font-weight: 600;
+    }
+   
+    .welcome{
+        color: rgb(50, 144, 221);
+        font-weight: 600;
+        font-size: 1.1em;
+        margin-right: 1em;
+    }
+
+    .checked {
+        color: orange;
+      }
+
+    .headding{
+          width: 92%;
+          margin: auto;
+          margin-top: 1em;
+          font-size: 1.1em;
+          font-weight: 800;
+          text-align: center;
+          box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+          padding: .7em 0em;
+          border-radius: .3em;
+    }
+
+    .padinator{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .padinator > *{
+        margin: 1em;
+    }
+
+    .pop-up-overlay{
+        display: block;
+        z-index: 15;
+        background-color: rgba(255, 255, 255, 0.616);
+        /* background-image: url("{% static 'background.jpg' %}"); */
+        background-position:center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform-origin: center;
+        transform: scale(0);
+        transition: transform -120ms ease-in-out 250ms;
+    }
+    .pop-up-user,.pop-up-bill{
+        display: none;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+        z-index: 16;
+        width: 50%;
+        background-color: transparent;
+        opacity: 0;
+        transition: opacity ease-in-out ;
+    }
+    .user_container{
+        width: 100%;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        background-color: white;
+        padding: 2em 1.5em;
+        border-radius: 0.4em;
+    }
+
+    .popup-close-btn{
+        background-color: transparent;
+        padding: 0.5em;
+        border: none;
+        position: absolute;
+        top: 0.25em;
+        right: 0.5em;
+        cursor: pointer;
+    }
+    .formhedding{
+        width: 75%;
+        margin: auto;
+        font-size: 1.5em;
+        font-weight: 700;
+        margin-top: .5em;
+    }
+
+   
+    .slidebar_container h4{
+        text-shadow: 5px 5px 5px #3290dd8a;
+        color: rgb(0, 0, 0);
+        font-weight: 600;
+        font-size: 1.2em;
+        width: 175px;
+        padding: 0.25em 0.5em ;
+        text-align: center;
+        margin: auto;
+        background-color: transparent;
+        font-style: italic;
+        border-radius: 0.15em;
+        margin-top: 1em;
+    }
+    .slidebar_container p {
+        margin-top: 1em;
+        margin-left: 2em;
+        text-align: center;
+        padding: 0.25em;
+        padding-right: 10px;
+        border-top-left-radius: 1em;
+        border-bottom-left-radius: 1em;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        font-weight: 600;
+        font-size: .9em;
+        background-color: transparent;
+    }
+    
+     .slidebar_container a{
+        display: block;
+        width: 184px;
+        text-align: center;
+        margin-top: 1em;
+        margin-left: 2em;
+        padding: 0.25em;
+        padding-right: 10px;
+        border-top-left-radius: 1em;
+        border-bottom-left-radius: 1em;
+        color: black;
+        text-decoration: none;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        font-weight: 600;
+        font-size: .9em;
+        background-color: transparent;
+     }
+
+     .service_tag{
+         border: 1px solid orange;
+         background-color: rgba(255, 166, 0, 0.281);
+         border-radius: 1em;
+         padding: 0em .5em;
+         font-size: .75em;
+         color: black;
+     }
+     .service-categoryList > h5{
+         margin: 1em 0em 0.25em 0em;
+         text-align: center;
+         font-weight: 650;
+         color:#000000;
+         font-style: italic;
+         text-shadow: 3px 3px 3px rgba(0, 0, 0, .20);
+     }
+     .service-categoryRow{
+         width: 85%;
+         margin: auto;
+         display: flex;
+         flex-wrap: wrap;
+         justify-content: space-evenly;
+         align-items: center;
+     }
+     .service-categoryitem ,.dash-options{
+         width: 90px;
+         padding: .75em;
+         margin-top: .5em;
+         color: rgba(0, 0, 0, 0.671);
+         background-color: #d5d5d77e;
+         border-radius: .41em;
+         display: flex;
+         justify-items: center;
+         flex-direction: column;
+         align-items: center;
+         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),0 6px 20px 0 rgba(0, 0, 0, .19) ;
+         cursor: pointer;
+     }
+     .service-categoryitem.active{
+         background-color: #46485086;
+         color: white;
+     }
+     .service-categoryitem.active i{
+         transform: scale(1.3);
+     }
+     .dash-options{
+         text-align: center;
+     }
+     
+     .service-categoryitem i , .dash-options i{
+         pointer-events: none;
+         font-size: 1.4em;
+         transform: scale(1);
+         transform-origin: center;
+         transition: transform 300ms ease-in-out;
+     }
+     .service-categoryitem:hover, .dash-options:hover{
+         background-color: #46485086;
+     }
+     .service-categoryitem:hover i , .dash-options:hover i{
+         transform: scale(1.3);
+         color: white;
+     }
+     .service-categoryitem b , .dash-options b{
+         pointer-events: none;
+        font-size: .9em;
+     }
+     .service-categoryitem:hover b , .dash-options:hover b{
+         color: white;
+     }
+     .UserOptions{
+         width: 85%;
+         margin:auto;
+         list-style: none;
+         display: flex;
+         flex-direction: column;
+     }
+
+     .UserOptions li{
+         text-align: center;
+         font-weight: 600;
+         font-size: 1em;
+         padding: .15em 1em;
+         margin-top: .75em;
+         background-color: #d5d5d77e;
+         border-radius:15px;
+         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),0 6px 20px 0 rgba(0, 0, 0, .19) ;
+         transform-origin: center;
+         transform: scale(1);
+         transition: transform 250ms ease-in-out;
+         cursor: pointer;
+     }
+     .UserOptions li:hover{
+         transform: scale(1.05);
+         color: white;
+         background-color: #46485086;
+     }
+      .service_tags{
+            font-size: 1.0em;
+            font-weight: 600;
+            text-shadow: 5px 4px 2px rgba(0, 0, 0, 0.644);
+        }
+          .seeker_history_container{
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .card-container{
+            width: 375px;
+            height: 150px;
+            margin: 1rem 0.5em !important;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .20), 0 6px 20px 0 rgba(0, 0, 0, .19);
+            border-radius: .5em;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .card-leftpart{
+            flex: 1;
+            flex-basis: 60%;
+            padding: 1em ;
+            background-color: #717482;
+            color: white;
+            position: relative;
+            align-self: stretch;
+        }
+        .center_icon{
+            position: absolute;
+            top: 50%;
+            right: 0;
+            background-color: whitesmoke;
+            width: 2em;
+            height: 2em; 
+            font-size: 1.2em;
+            color: #464850;
+            transform: translate(50%,-50%) rotate(45deg);
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .050), 0 6px 20px 0 rgba(0, 0, 0, .2);
+            transition: transform ease-in 350ms;
+        }
+        .card-leftpart i{
+           position: absolute;
+           right: 0;
+           top: 50%;
+           transform: translate(50%,-50%);
+           color: black;
+           font-size: 1.3em;
+        }
+        .card-rightpart{
+            flex-basis: 40%;
+            padding: .5em;
+            background-color: whitesmoke;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: center;
+            height: 100%;
+        }
+        .card-container:hover .center_icon{
+            transform: translate(50%,-50%) rotate(270deg);
+        }
+        .bill_btn,.info_btns{
+            margin-bottom: .5em;
+            border-radius: .35em;
+            overflow: hidden;
+            width: 115px !important;
+            height: 1.75em;
+            background-color: #717482;
+            border: none;
+            color: white;
+            width: auto;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .20), 0 6px 20px 0 rgba(0, 0, 0, .19);
+
+        }
+        .bill_btn .left,.info_btns .left{
+            background-color: white;
+            width: 2em;
+            color: #717482;
+            align-self: stretch;
+            display: flex;
+            position: relative;
+        }
+        .bill_btn .left::after,.info_btns .left::after{
+            content: " ";
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translate(50%,-50%) rotate(45deg);
+            width: .6em;
+            height: .6em;
+            background-color: white;
+            
+        }
+        .bill_btn .left i, .info_btns .left i{
+            align-self: center;
+            margin: auto;
+        }
+        .bill_btn  .right ,.info_btns .right{
+            padding: .5em;  
+            font-size: .9em;                              
+        }
+        .billviewlink:hover{
+            color: white;
+            text-decoration: none;
+        }
+</style>
+{% block styles %}
+    <style>
+    .userform,.billform{
+        width: 90%;
+        padding: 2em ;
+        border-radius: .45em;
+        height: auto;
+        margin: auto;
+        
+    }
+    textarea{
+        background-color:transparent;
+        height: 90px;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,.2), 0 6px 20px 0 rgba(0,0,0,.2);
+    }
+    label{
+        font-size: 1em;
+        font-weight: 600;
+        color: black;
+    }
+    input,select,textarea{
+        display: block;
+        background-color:rgb(231, 231, 231);
+        border: none;
+        color: black;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,.1), 0 6px 20px 0 rgba(0,0,0,.1);
+        padding: 0.25em 0.75em;
+        width: 100%;
+        border-radius: .05em;
+        overflow: hidden;
+    }
+    textarea,#id_jobName{
+        background-color: transparent;
+    }
+    #id_labour_cost,#id_resource_cost,#id_bill_pic{
+        background-color: transparent;
+    }
+    </style>
+{% endblock %}
+<body>
+    <div class="maincontainer" >
+        <div class="content-container" >
+            <div class="slidebar">
+                <div class="slidebar_container">
+                    <form  class="search-form" method="GET" >
+                        <label id="search-label"  for="search"><i class="fas fa-search"></i></label>
+                        <input  id='search' type="search" placeholder="Search"  name="search" {% if request.GET.search %} value="{{ request.GET.search }}" {% endif %}>
+                    </form>
+                    <div class="service-categoryList ">
+                        <h5>Service Status</h5>
+                        <div class="service-categoryRow">
+                            <div class="service-categoryitem" data-attr="request">
+                                <i class="fas fa-globe"></i>
+                                <b>Requested</b>
+                            </div>
+                            <div class="service-categoryitem" data-attr="accept">
+                                <i class="fas fa-charging-station"></i>
+                                <b>On going</b>
+                            </div>
+                            <div class=" service-categoryitem"  data-attr="done">
+                                <i class="fas fa-history"></i>
+                                <b>History</b>
+                            </div>
+                        </div>
+                        <hr>
+                        <h5>Profile Option</h5>
+                        <ul class="UserOptions">
+                            <li onclick="logouts()">Logout</li>
+                        </ul>
+                         <div class="service-categoryRow mt-3">
+                            <div class="dash-options" onclick="gotoUserPage()">
+                                <i class="fas fa-user-edit"></i>
+                                <b>Edit Profile</b>
+                            </div>
+                            <div class="dash-options" onclick="gotoSeekerDash()">
+                                <i class="fas fa-hands-helping"></i>
+                                <b>Seeker Dash</b>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="actual_content">
+                <div class="nav-container">
+                    <ul class="navlist">
+                        <li class="nav-li" onclick="logouts()"><a class="nav-a" href="">Home</a></li>
+                        <li  style="margin-left:0;list-style: none;"><a  style="color:#464850;font-weight: 650;font-style: italic;text-shadow: 3px 3px 3px rgba(0, 0, 0, .20);"><span class="welcome">Welcome</span>{{ request.user.username }}</a></li>
+                    </ul>
+                </div>
+                <div class="rows">
+                    <div class="columns one">
+                {% block seeker_html %}
+                <h2 class="headding mt-4" style="width: 92%;">Service Providers</h2>
+                    <div class="row user_paginator" style="padding: 1em  0em;width: 92%; margin: auto;">
+                <div class="seeker_history_container">
+                    {% for value in joblist %}
+                    {% if value.job_status == "request" %}
+
+                        <div class="card-container" onclick="gotoJobDash('{{value.job_id}}')">
+                            <div class="card-leftpart">
+                                <h4 class="service_tags">{{ value.jobName|title }}</h4>
+                                <h4 class="text-h4">{{ value.assignDate}}</h4>
+                                <h4 class="text-h4">{{ value.seeker.user.username}}</h4>
+                                <h4 class="text-h4">{{ value.seeker.phonenumber}}</h4>
+                                <span class="center_icon"></span>
+                                {% if value.job_title == "electrician" %}
+                                    <i class="fas fa-charging-station"></i>
+                                {% elif value.job_title == "furniture" %}
+                                        <i class="fas fa-chair"></i>
+                                {% elif value.job_title == "painting" %}
+                                        <i class="fas fa-paint-roller"></i>
+                                {% elif value.job_title == "cleaning" %}
+                                        <i class="fas fa-broom"></i>
+                                {% else%}
+                                        <i class="fas fa-wrench"></i>
+                                {% endif %}
+                            </div>
+                            <div class="card-rightpart">
+                                <button class="bill_btn" onclick="accept_jobrequest(event,'{{value.job_id}}')" >
+                                    <span class="left"><i class="far fa-times-circle"></i></span>
+                                    <span class="ml-2 right">Accept</span>
+                                </button>
+                                <button class="bill_btn" onclick="reject_jobrequest(event,'{{value.job_id}}')">
+                                    <span class="left"><i class="far fa-times-circle"></i></span>
+                                    <span class="ml-2 right">Cancel</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+
+                    {% elif value.job_status == "accept" %}
+
+                        
+                        <div class="card-container" onclick="gotoJobDash('{{value.job_id}}')" >
+                            <div class="card-leftpart">
+                                <h4 class="service_tags">{{ value.jobName|title }}</h4>
+                                <h4 class="text-h4">{{ value.assignDate}}</h4>
+                                <h4 class="text-h4">{{ value.seeker.user.username}}</h4>
+                                <h4 class="text-h4">{{ value.seeker.phonenumber}}</h4>
+                                <span class="center_icon"></span>
+                                {% if value.job_title == "electrician" %}
+                                    <i class="fas fa-charging-station"></i>
+                                {% elif value.job_title == "furniture" %}
+                                        <i class="fas fa-chair"></i>
+                                {% elif value.job_title == "painting" %}
+                                        <i class="fas fa-paint-roller"></i>
+                                {% elif value.job_title == "cleaning" %}
+                                        <i class="fas fa-broom"></i>
+                                {% else%}
+                                        <i class="fas fa-wrench"></i>
+                                {% endif %}
+                            </div>
+                            <div class="card-rightpart" >
+                                <button class="bill_btn" onclick="submitBill(event,'{{value.job_id}}')">
+                                        <span class="left"><i class="fas fa-file-invoice"></i></span>
+                                        <span class="ml-2 right">MakeBill</span>
+                                    </button>
+                            </div>
+                        </div>
+                    
+
+                    {% else %}
+
+                        <div class="card-container" onclick="gotoJobDash('{{value.job_id}}')">
+                            <div class="card-leftpart">
+                                <h4 class="service_tags">{{ value.jobName|title }}</h4>
+                                <h4 class="text-h4">{{ value.assignDate}}</h4>
+                                <h4 class="text-h4">{{ value.seeker.user.username}}</h4>
+                                <h4 class="text-h4">{{ value.seeker.phonenumber}}</h4>
+                                <span class="center_icon"></span>
+                                {% if value.job_title == "electrician" %}
+                                    <i class="fas fa-charging-station"></i>
+                                {% elif value.job_title == "furniture" %}
+                                        <i class="fas fa-chair"></i>
+                                {% elif value.job_title == "painting" %}
+                                        <i class="fas fa-paint-roller"></i>
+                                {% elif value.job_title == "cleaning" %}
+                                        <i class="fas fa-broom"></i>
+                                {% else%}
+                                        <i class="fas fa-wrench"></i>
+                                {% endif %}
+                            </div>
+                            <div class="card-rightpart">
+                                <a class="bill_btn billviewlink" href="{{value.payment.bill_pic.url}}" onclick="event.stopImmediatePropagation()">
+                                    <span class="left"><i class="fas fa-file-invoice"></i></span>
+                                    <span class="ml-2 right">ViewBill</span>
+                                </a>
+                                {% if value.job_id|Check_rated == 'no' %}
+                                <button class="info_btns" onclick="submitComment(event,'{{value.job_id}}')">
+                                    <span class="left"><i class="far fa fa-star"></i></span>
+                                    <span class="ml-2 right">Rate</span>    
+                                </button>
+                                {% else %}
+                                 <button class="info_btns">
+                                    <span class="left"><i class="far fa fa-star checked"></i></span>
+                                    <span class="ml-2 right">Rated</span>    
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}    
+                {% endfor %}
+                </div> 
+            </div>
+            <div class="padinator">
+                {% if joblist.has_previous %}
+                <a class="btn btn-primary btn-sm" href="?page=1" role="button" style="width:100px ;height: 30px;">&laquo; first</a>
+                <a class="btn btn-primary  btn-sm" href="?page={{ joblist.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search}}{% endif %}" role="button" style="width:100px ;height: 30px;">previous</a>
+                {% endif %}
+        
+                <span class="current btn btn-warning  btn-sm" style="width:150px;height: 30px;">
+                    Page {{ joblist.number }} of {{ joblist.paginator.num_pages }}.
+                </span> 
+                
+                {% if joblist.has_next %}
+                <a class="btn btn-primary  btn-sm" href="?page={{ joblist.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search}}{% endif %}" role="button" style="width:100px ;height: 30px;">next</a>
+                <a class="btn btn-primary  btn-sm" href="?page={{ joblist.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search}}{% endif %}" role="button" style="width:100px ;height: 30px;">last &raquo;</a> 
+                {% endif %}
+
+            </div>
+            
+            {% endblock %}
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+   <div class="pop-up-overlay">
+        
+    </div>
+
+    
+
+   
+    {% block backendform %}
+        
+        <div class="pop-up-user">
+            <div class="user_container">
+                <button class="popup-close-btn" onclick="close_popup_overlay('.pop-up-user')"><i class="fas fa-times fa-2x"></i></button>
+                <form method="POST" class="userform">
+                      <h2>Rate Users Work</h2>
+                      {% csrf_token %} {{ ratingform }}
+                      <label>Rating <span id="rating_count">0</span>/5</label>
+                      <br>
+                      <button class="btn btn-dark mt-3" type="submit">Rate</button>
+                 </form>
+            </div>
+        </div>
+        <div class="pop-up-bill">
+            <div class="user_container">
+                <button class="popup-close-btn" onclick="close_popup_overlay('.pop-up-bill')"><i class="fas fa-times fa-2x"></i></button>
+                <form method="POST" class="billform" enctype="multipart/form-data">
+                      <h2>Bill Genaration Form</h2>
+                      {% csrf_token %} {{ billform }}
+                      <button class="btn btn-dark mt-3" type="submit">Submit</button>
+                 </form>
+            </div>
+        </div>
+
+    {% endblock %}
+
+    
+
+  
+
+</body>
+
+<script>
+
+    function open_popup_overlay(pop_up){
+     $('.pop-up-overlay').css('transform','scale(1)')
+     $(pop_up).css('display','block')
+     $(pop_up).css('opacity','1')
+ }
+
+    function close_popup_overlay(pop_up){
+     $('.pop-up-overlay').css('transform','scale(0)')
+     $(pop_up).css('display','none')
+     $(pop_up).css('opacity','0')
+ }
+    
+    
+    function logouts(){
+     var ans = confirm("{{ request.user.username }} sure you want to exit (Logout) ?")
+     if( ans == true){
+            window.location.href="{% url 'logout' %}"
+     }
+ }
+
+    const gotoSeekerDash = () =>{
+            window.location.href = "{% url 'Seeker' service_catogory='All' %}"
+    }
+    const gotoUserPage = () =>{
+        localStorage.setItem("backUrl",window.location.href)
+        window.location.href = "{% url 'userhome' user_id=request.user.applicationuser.uid %}"
+    }
+    const gotoJobDash = (jobid) =>{
+        localStorage.setItem("jobbackUrl",window.location.href)
+        window.location.href = "{% url 'jobInfo' job_id='123' %}".replace(/123/,jobid)
+    }
+</script>
+{% block Scripts %}
+    <script>
+         window.onload = () =>{
+            let urls = window.location.href
+            const lists = urls.split('/')
+            if(lists[4] != null){
+                document.querySelector("div[data-attr='"+lists[4]+"']").classList.toggle('active')
+            }
+            textvalue=null
+            if(lists[4]=="request"){
+                textvalue="List of Requested Job"
+            }else if(lists[4]=="accept"){
+                textvalue="List of Job to serve"
+            }else{
+                textvalue="List of compleated Job"
+            }
+            document.querySelector('.headding').textContent=textvalue
+        }
+
+ 
+        const service_list = document.querySelectorAll('.service-categoryitem')
+        for(let i=0; i< service_list.length ;i++){
+            service_list[i].addEventListener("click", (event) =>{    
+                const category = event.target.getAttribute('data-attr')
+                window.location.href = "{% url 'Provider' service_status='category' %}".replace(/category/, category);
+        })
+        }
+        
+        function accept_jobrequest(event,jid){
+            event.stopImmediatePropagation()
+            $.ajax({
+                url : "{% url 'accept_work' %}",
+                type: "GET",
+                data : {'job_id':jid},
+                headers: {'X-CSRFToken':"{{ csrf_token }}"},
+                success: function(data){
+                    window.location.href = "{% url 'Provider' service_status='request' %}"
+                },
+                error :function(){
+                    alert("Something went wrong try after some time")
+                }
+
+            })
+        }
+
+        function reject_jobrequest(event,jid){
+            event.stopImmediatePropagation()
+            $.ajax({
+                url : "{% url 'reject_work' %}",
+                type:"GET",
+                data : {'job_id':jid},
+                headers: {'X-CSRFToken':"{{ csrf_token }}"},
+                success: function(data){
+                    window.location.href = "{% url 'Provider' service_status='request' %}"
+                },
+                error :function(){
+                    alert("Something went wrong try after some time")
+                }
+
+            })
+        }
+
+
+        function submitComment(event,job_id){
+            event.stopImmediatePropagation();
+            $('#id_comment_job_id').val(job_id);
+            $('label[for="id_job_id"]').css('display','none')
+            open_popup_overlay('.pop-up-user')
+        }
+         function submitBill(event,job_id){
+            event.stopImmediatePropagation();
+            open_popup_overlay('.pop-up-bill')
+            $('#id_job_id').val(job_id);
+            $('#id_job_id').prop('readonly','readonly')
+        }
+
+        $('#id_rating').on('change',function(event){
+            var rating = event.target.value
+            $('#rating_count').text(rating)
+        })
+
+        document.querySelector('.userform').onsubmit = function(event){
+                event.preventDefault()
+                close_popup_overlay('.pop-up-user')
+                document.querySelector('.userform').submit()
+        }
+        document.querySelector('.billform').onsubmit = function(event){
+                event.preventDefault()
+                close_popup_overlay('.pop-up-bill')
+                document.querySelector('.billform').submit()
+        }
+    
+    </script>
+{% endblock %}
+
+</html>

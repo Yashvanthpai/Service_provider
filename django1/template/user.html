@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+{% load custumTags %}
+{% load static %}
+{% load crispy_forms_tags %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" data-auto-replace-svg="nest"></script>
+
+    <style>
+     * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-family: 'Roboto', ;
+    }
+    .maincontainer {
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+        background-image: url("{% static 'background.jpg' %}");
+        background-position:center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+    .content-container {
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+    }
+    input,select,textarea{
+        display: block;
+        background-color:transparent;
+        border: none;
+        color: black;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,.1), 0 6px 20px 0 rgba(0,0,0,.1);
+        padding: 0.25em 0.75em;
+        width: 400px;
+        border-radius: .05em;
+        overflow: hidden;
+    }
+    textarea{
+        height: 90px;
+    }
+    label{
+        font-size: 1em;
+        font-weight: 600;
+        color: black;
+    }
+    label[for='id_profile_pic']{
+        display: block !important;
+        margin-bottom: 0 !important;
+    }
+    label[for="profile_pic-clear_id"],input[type='checkbox']{
+        display: inline;
+    }
+    input[type="checkbox"]{
+        width: auto;
+        box-shadow: none;
+    }
+    input[type="file"]{
+        background-color: transparent;
+        padding-left: 0;
+        padding-right: 0;
+        box-shadow:none
+    }
+    .left-content{
+        height: 100vh;
+        padding: 1em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: auto;
+        scrollbar-width: thin;
+    }
+
+    .userform{
+        padding: 1em 2em ;
+        border-radius: .45em;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
+        height: auto;
+    }
+
+    .right-content{
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .image-container{
+        padding: 1em;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        position: relative;
+    }
+    .userimage{
+        width: 12em;
+        height: 12em;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.055), 0 6px 20px 0 rgba(0, 0, 0, 0.055); 
+        
+    }
+    .container{
+        padding-bottom: 1.5em;
+        height: calc(100vh - 15em);
+        overflow: auto;
+        scrollbar-width: thin;
+        width: 100%;
+    }
+    .container_content{
+        width: 100%;
+        padding: 1em 0em;
+        display: flex;
+        justify-content: space-evenly;
+        flex-wrap: wrap;
+    }
+    .updateheading{
+        text-align: center;
+        width: 100%;
+        font-weight: 600;
+        text-shadow: 4px 2px 2px rgba(0, 0, 0, 0.61);
+    }
+
+    .bill_btn,.info_btns{
+        margin-bottom: .5em;
+        border-radius: .35em;
+        overflow: hidden;
+        width: 105px !important;
+        height: 1.75em;
+        background-color: #717482;
+        border: none;
+        color: white;
+        width: auto;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .20), 0 6px 20px 0 rgba(0, 0, 0, .19);
+
+    }
+    .bill_btn .left,.info_btns .left{
+        background-color: white;
+        width: 2em;
+        color: #717482;
+        align-self: stretch;
+        display: flex;
+        position: relative;
+    }
+    .bill_btn .left::after,.info_btns .left::after{
+        content: " ";
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translate(50%,-50%) rotate(45deg);
+        width: .6em;
+        height: .6em;
+        background-color: white;
+        
+    }
+    .bill_btn .left i, .info_btns .left i{
+        align-self: center;
+        margin: auto;
+    }
+    .bill_btn  .right ,.info_btns .right{
+        padding: .5em;  
+        font-size: .9em;                              
+    }
+
+    .service_tags{
+        font-size: 1.0em;
+        font-weight: 600;
+        text-shadow: 5px 4px 2px rgba(0, 0, 0, 0.644);
+    }
+
+    .card-container{
+        width: 375px;
+        /* hieght take out */
+        height: 150px; 
+        margin: 1rem 0rem !important;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .20), 0 6px 20px 0 rgba(0, 0, 0, .19);
+        border-radius: .5em;
+        overflow: hidden;
+    }
+    .card-leftpart{
+        flex: 1;
+        align-self: stretch;
+        flex-basis: 60%;
+        padding: 0em;
+        background-color: #717482;
+        color: white;
+        position: relative;
+        box-sizing: content-box;
+    }
+    .center_icon{
+        position: absolute;
+        top: 50%;
+        right: 0;
+        background-color: whitesmoke;
+        width: 2em;
+        height: 2em; 
+        font-size: 1.2em;
+        color: #464850;
+        transform: translate(50%,-50%) rotate(45deg);
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .050), 0 6px 20px 0 rgba(0, 0, 0, .2);
+        transition: transform ease-in 350ms;
+    }
+    .card-leftpart i{
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translate(50%,-50%);
+        color: black;
+        font-size: 1.3em;
+    }
+    .card-rightpart{
+        flex-basis: 20%;
+        padding: .5em;
+        background-color: whitesmoke;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        align-self: stretch;
+        
+    }
+    .card-container:hover .center_icon{
+        transform: translate(50%,-50%) rotate(270deg);
+    }
+
+    .filter_container{
+        position: absolute;
+        right: 0;
+        transform: translate(-25%);
+        width: 175px;
+    }
+    #filter_rating,#filter_cat,.back{
+        width: 175px;
+        background-color: white;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .050), 0 6px 20px 0 rgba(0, 0, 0, .2);
+
+    }
+    .back{
+        height: 32px;
+        line-height: 16px;
+        margin-top: 1em;
+        font-weight: 600;
+    }
+    .text-h4{
+        width: 100%;
+        font-size: .9em;
+        text-align: center;
+    }
+    .commenter{
+        line-height: 22px;
+        font-size: 1em;
+        font-weight: 600;
+        padding: 0.4em 1em;
+    }
+    .comment{
+        font-size: .9em;
+        width: 100%;
+        height: calc( 100% - 4em);
+        scrollbar-width: thin;
+        overflow-x: hidden;
+        overflow-y: hidden;     
+        padding-left: 2em;
+        font-weight: 550;
+        position: relative;
+        line-height: 1.5em;
+    }
+    .comment::after{
+        content: "  ''";
+        line-height: 1em;
+        font-size: 1.3em;
+    }
+    .comment::before{
+        content: "''";
+        position: absolute;
+        left: 5%;
+        transform: translateX(-5%);
+        line-height: 1em;
+        font-size: 1.3em;
+    }
+    .card-container:hover .comment{
+        overflow-y: auto;
+    }
+    .commentdate{
+        float: right;
+        font-size: .9em;
+    }
+    .checked {
+        color: orange;
+      }
+    .errormsg{
+        
+        text-shadow: 5px 3px 3px rgba(0, 0, 0, 0.719);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+    }
+    
+
+    </style>
+</head>
+<body>
+     <div class="maincontainer" >
+        <div class="content-container" >
+            <div class="left-content">
+                    <form class="userform" method="POST" enctype="multipart/form-data">
+                        <h4 class="updateheading">Update User Deatils</h4>
+                        {% csrf_token %} 
+                        {{ form }}
+                        <label class="mt-2">Overall Rating:  </label>
+                         {% for x in "stars" %}
+                            {% if forloop.counter <= userobj.rating %}
+                                <span class="fa fa-star checked"></span>
+                            {% else %}
+                                <span class="fa fa-star"></span>
+                            {% endif %}
+                        {% endfor %}
+                        <br>
+                        <label >Total rated user:  {{userobj.rated_user_count}}</label>
+                        {% if thirdperson == 'self' %}
+                            <button class=" btn btn-warning mt-3 " type="submit">Submit</button>
+                        {% endif %}
+                    </form>
+            </div>
+            <div class="right-content">
+                    <div class="image-container">
+                        <img class="userimage" src="{{image}}" alt="">
+                        <div class="filter_container">
+                            {% if commentobj %}
+                            <label for="filter_rating">Filter By Rating</label>
+                            <select name="filter_rating" id="filter_rating">
+                                <option value="accending" selected>ACCENDING</option>
+                                <option value="deccending">DECCENDING</option>
+                            </select>
+                            <label for="filter_cat">By Service category</label>
+                            <select name="filter_cat" id="filter_cat">
+                                <option value="all" selected>ALL</option>
+                                <option value="cleaning">CLEANING</option>
+                                <option value="plumbing">PLUMBING</option>
+                                <option value="electrician">ELECTRICIAN</option>
+                                <option value="painting">PAINTING</option>
+                                <option value="furniture">FURNITURE</option>
+                            </select>
+                            {% endif %}
+                            <a class="btn btn-light back" onclick="goback()">Go Back</a>
+                        </div>
+                    </div>
+                    <div class="container">
+                    <div class="container_content">
+                    {% for value in commentobj %}
+                            
+                            <div class="card-container">
+                                    <div class="card-leftpart">
+                                        <h5 class="commenter">{{value.job.seeker.user.username}}<span class="commentdate">{{value.timestamp}}</span></h5>
+                                        <p class="comment">{{value.content}}</p>
+                                        <span class="center_icon"></span>
+                                        {% if value.job.job_title == "electrician" %}
+                                            <i class="fas fa-charging-station"></i>
+                                        {% elif value.job.job_title == "furniture" %}
+                                                <i class="fas fa-chair"></i>
+                                        {% elif value.job.job_title == "painting" %}
+                                                <i class="fas fa-paint-roller"></i>
+                                        {% elif value.job.job_title == "cleaning" %}
+                                                <i class="fas fa-broom"></i>
+                                        {% else%}
+                                                <i class="fas fa-wrench"></i>
+                                        {% endif %}   
+                                    </div>
+                                    <div class="card-rightpart">
+                                            {% for x in "stars" %}
+                                                {% if forloop.counter <= value.rating %}
+                                                    <span class="fa fa-star checked"></span>
+                                                {% else %}
+                                                    <span class="fa fa-star"></span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        
+                                    </div>
+                            </div>
+                    {% empty %}
+                        <h1 class="errormsg">User is not been rated yet.</h1>
+                        
+                    {% endfor %}      
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.onload = () =>{
+            
+            {% if thirdperson == 'thirdperson' %}
+                           tata()
+            {% endif %}
+            let urls = window.location.href
+            const urlParams = new URL(urls)
+            if( urlParams.searchParams.get('filter_rating') != null){
+                document.querySelector('#filter_rating').value = urlParams.searchParams.get('filter_rating')
+            }
+            if( urlParams.searchParams.get('filter_cat') != null){
+                document.querySelector('#filter_cat').value = urlParams.searchParams.get('filter_cat')
+            }
+            
+        }
+        {% if commentobj %}
+         document.querySelector('#filter_rating').addEventListener('change', (event) =>{
+            const filter_query = event.target.value;
+            let urls = window.location.href
+            let urlParams = new URL(urls);
+            urlParams.searchParams.set('filter_rating',filter_query)
+            window.location.href = urlParams.toString()
+        })
+        document.querySelector('#filter_cat').addEventListener('change', (event) =>{
+            const filter_query = event.target.value;
+            let urls = window.location.href
+            let urlParams = new URL(urls);
+            urlParams.searchParams.set('filter_cat',filter_query)
+            window.location.href = urlParams.toString()
+        })
+        {% endif %}
+        function tata(){
+            document.querySelector("label[for='id_profile_pic']").textContent ="Profile Picture:"
+            document.querySelector("label[for='id_address']").textContent= "Address:"
+            document.querySelector("label[for='id_phonenumber']").textContent="Phone Number:"
+            document.querySelector("label[for='id_profile_pic']").textContent="Profilepicture:"
+            document.querySelector("label[for='id_service_catogory']").textContent="service option:"
+            document.querySelector("label[for='id_user_satus']").textContent="UserType:"
+
+            $("label[for='profile_pic-clear_id']").css('display','none')
+            $('#profile_pic-clear_id').css('display','none')
+            $('#id_profile_pic').css('display','none')
+            $('textarea').prop('readonly','readonly')
+            $('#id_user_satus').attr("disabled", true);
+            $('#id_service_catogory').attr("disabled", true);
+        }
+        
+        const goback = ()=>{
+            window.location.href = localStorage.getItem("backUrl")
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

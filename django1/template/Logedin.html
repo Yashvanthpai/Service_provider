@@ -98,7 +98,21 @@
     .content-container {
         height: calc(100% - 2.5em);
         overflow: hidden;
+        display: flex;
     }
+    .slidebar{
+        max-height: 100%;
+        overflow: hidden;
+        flex-basis: 250px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19),0 6px 20px 0 rgba(0, 0, 0, .20);
+    }
+    .actual_content{
+        flex: 1;
+        max-height: 100%;
+        overflow: hidden;
+        scrollbar-width: thin;
+    }
+  
     
     .container {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
@@ -108,10 +122,12 @@
         border-radius: 1em;
         padding: .75em;
         cursor: pointer;
+        width: 100%;
+        height: 175px;
     }
 
     .filter-bar{
-        width:90%;
+        width:95%;
         margin: auto;
         display: flex; 
         justify-content: space-between; 
@@ -171,6 +187,7 @@
         width: 100%;
         height: 100%;
         overflow: auto;
+        scrollbar-width: thin;
     }
 
     .one {
@@ -213,12 +230,11 @@
     }
     
     .img-content img {
-        width: 125px;
-        height: 125px;
+        width: 100px;
+        height: 100px;
         object-fit: cover;
-        border-radius: 6em;
-        padding: .3em;
-        background-color: rgb(216, 212, 212);
+        border-radius: 1em;
+        
     }
     .text-h4{
         font-size: 1.0em;
@@ -237,7 +253,7 @@
       }
 
     .headding{
-          width: 80%;
+          width: 92%;
           margin: auto;
           margin-top: 1em;
           font-size: 1.1em;
@@ -252,7 +268,7 @@
         width: 3.5em;
         height: 3.5em;
         object-fit: cover;
-        border-radius: 1em;
+        border-radius: .25em;
     }
 
 
@@ -298,9 +314,10 @@
     }
 
     .table{
-        width: 65%; 
+        width: 90%; 
         margin: auto;
     }
+  
 
      td , th{
         text-align: center;
@@ -443,7 +460,90 @@
          box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
   
     }
-    
+    .slidebar_container h4{
+        text-shadow: 5px 5px 5px #3290dd8a;
+        color: rgb(0, 0, 0);
+        font-weight: 600;
+        font-size: 1.2em;
+        width: 175px;
+        padding: 0.25em 0.5em ;
+        text-align: center;
+        margin: auto;
+        background-color: transparent;
+        font-style: italic;
+        border-radius: 0.15em;
+        margin-top: 1em;
+    }
+    .slidebar_container p {
+        position: relative;
+        z-index: 2;
+        margin-top: 1em;
+        margin-left: 1em;
+        text-align: center;
+        padding: 0.25em;
+        background-color: transparent;
+        padding-right: 10px;
+        border-top-left-radius: 1em;
+        border-bottom-left-radius: 1em;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        
+    }
+    .slidebar_container p:nth-child(odd):after{
+        content: " ";
+        position: absolute;
+        z-index: -1;
+        left: 0;
+        top: 0;
+        width: 0%;
+        height: 100%;
+        border-top-left-radius: 1em;
+        border-bottom-left-radius: 1em;
+         background-color: #f0f0f0a4;
+        transition: width 200ms ease-in-out;
+    }
+     .slidebar_container a{
+        position: relative;
+        z-index: 2;
+        display: block;
+        width: 184px;
+        text-align: center;
+        margin-top: 1em;
+        margin-left: 1em;
+        padding: 0.25em;
+        background-color: transparent;
+        padding-right: 10px;
+        border-top-left-radius: 1em;
+        border-bottom-left-radius: 1em;
+        color: black;
+        text-decoration: none;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+     }
+     .slidebar_container a::after{
+        content: " ";
+        position: absolute;
+        z-index: -1;
+        left: 0;
+        top: 0;
+        width: 0%;
+        height: 100%;
+        border-top-left-radius: 1em;
+        border-bottom-left-radius: 1em;
+        background-color: #f0f0f0a4;
+        transition: width 200ms ease-in-out;
+    }
+    .slidebar_container a:hover, .slidebar_container p:nth-child(odd):hover{
+        cursor: pointer;
+        font-weight: 650;
+    }
+     .slidebar_container a:hover::after , .slidebar_container p:nth-child(odd):hover::after{
+         width: 100%;
+     }
+     .usertypechecked{
+         cursor:none;
+        font-weight: 650;
+        background-color: #f0f0f0a4 !important;
+     }
+     
 </style>
 
 <body>
@@ -451,37 +551,43 @@
         <div class="nav-container">
             <ul class="navlist">
                 <li class="nav-li" onclick="logouts()"><a class="nav-a" href="">Home</a></li>
-                <li class="nav-item dropdown" style="list-style: none;margin-left:0">
-                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" style="color:#464850"><span class="welcome">Welcome</span>{{ request.user.username }}</a>
-                    <div class="dropdown-menu dropdown-menu-right">
-                      <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
-                    </div>
-                  </li>
+                <li  style="margin-left:0;list-style: none;"><a  style="color:#464850;font-weight: 650;font-style: italic;text-shadow: 3px 3px 3px rgba(0, 0, 0, .20);"><span class="welcome">Welcome</span>{{ request.user.username }}</a></li>
             </ul>
         </div>
         <div class="content-container" >
-            <div class="filter-bar">
-                <div class="tab_btn_group">
-                    <button class="tab_btn tab_btn_checked" onclick="slidetab_one()">Dashbord</button>
-                    <button class="tab_btn " onclick="slidetab_two()">Request</button>
-                    <button class="tab_btn " onclick="slidetab_three()">Work</button>
-                    <button class="tab_btn " onclick="slidetab_four()">History</button>
+            <div class="slidebar">
+                <div class="slidebar_container">
+                    <h4>Seeker Dash</h4>
+                    <p onclick="gotoSeekerHome()">History</p>
+                    <hr>
+                    <h4>ProfileOption</h4>
+                    <p class="usertypechecked">Provider</p>
+                    <a href="{% url 'logout' %}">Logout</a>
                 </div>
+            </div>
+            <div class="actual_content">
+                <div class="filter-bar">
+                    <div class="tab_btn_group">
+                        <button class="tab_btn tab_btn_checked" onclick="slidetab_one()">Dashbord</button>
+                        <button class="tab_btn " onclick="slidetab_two()">Request</button>
+                        <button class="tab_btn " onclick="slidetab_three()">Work</button>
+                        <button class="tab_btn " onclick="slidetab_four()">History</button>
+                    </div>
 
-                 <form  class="search-form" method="GET" >
-                    <input  id='search' type="search" name="search" {% if request.GET.search %} value="{{ request.GET.search }}" {% endif %}>
-                    <label id="search-label"  for="search"><i class="fas fa-search"></i></label>
-                </form> 
+                    <form  class="search-form" method="GET" >
+                        <input  id='search' type="search" name="search" {% if request.GET.search %} value="{{ request.GET.search }}" {% endif %}>
+                        <label id="search-label"  for="search"><i class="fas fa-search"></i></label>
+                    </form> 
 
                 
-            </div>
+                </div>
 
-            <div class="rows">
+                <div class="rows">
                     <div class="columns one">
-                            <h2 class="headding" style="width: 90%;">Service Providers</h2>
-                            <div class="row user_paginator" style="padding: 1em 1.5em 1em 1.5em;width: 90%; margin: auto;">
+                            <h2 class="headding" style="width: 92%;">Service Providers</h2>
+                            <div class="row user_paginator" style="padding: 1em 1.5em 1em 1.5em;width: 92%; margin: auto;">
                                     {% for value in userlist %}
-                                            <div class="col-sm-3 unit">
+                                            <div class="col-sm-4 unit" style="padding-left:0;padding-right: 10px;">
                                                 <div class="container mb-4" onclick='get_user_data("{{ value.uid }}")'>
                                                     <div class="text-content">
                                                         <h4 class="text-h4">{{ value.user.username }}</h4>
@@ -500,6 +606,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            
 
                                     {% endfor %}
                                     
@@ -698,7 +805,9 @@
                                     {% endif %}
                         </div>
                     </div>
+                </div>
             </div>
+            
 
         </div>
     </div>
@@ -864,6 +973,10 @@
 </body>
 
 <script>
+
+    const gotoSeekerHome = () =>{
+        window.location.href = "{% url 'Seeker' %}"
+    }
 
     function open_popup_overlay(pop_up){
      $('.pop-up-overlay').css('transform','scale(1)')

@@ -1,0 +1,407 @@
+{% extends 'seeker.html' %}
+{% load custumTags %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block styles %}
+    <style>
+        .filter_container{
+            display: flex;
+            justify-content: flex-end;
+            padding: 0.5em 3em;
+            align-items: center;
+        }
+        label{
+            padding:0;
+            margin: 0;
+            margin-right: 1em;
+            color:black;
+            font-weight: 650;
+            font-style: italic;
+            text-shadow: 3px 3px 3px rgba(0, 0, 0, .20);
+        }
+        #filter_query{
+            border: none;
+            padding: .5em 2em;
+            color:black;
+            font-style: italic;
+            text-shadow: 3px 3px 3px rgba(0, 0, 0, .20);
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .20), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        }
+        .paddingzero{
+            padding: 0;
+        }
+
+        .bill_btn,.info_btns{
+            margin-bottom: .5em;
+            border-radius: .35em;
+            overflow: hidden;
+            width: 105px !important;
+            height: 1.75em;
+            background-color: #717482;
+            border: none;
+            color: white;
+            width: auto;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .20), 0 6px 20px 0 rgba(0, 0, 0, .19);
+
+        }
+        .bill_btn .left,.info_btns .left{
+            background-color: white;
+            width: 2em;
+            color: #717482;
+            align-self: stretch;
+            display: flex;
+            position: relative;
+        }
+        .bill_btn .left::after,.info_btns .left::after{
+            content: " ";
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translate(50%,-50%) rotate(45deg);
+            width: .6em;
+            height: .6em;
+            background-color: white;
+            
+        }
+        .bill_btn .left i, .info_btns .left i{
+            align-self: center;
+            margin: auto;
+            transform: none;
+        }
+        .bill_btn  .right ,.info_btns .right{
+            padding: .5em;  
+            font-size: .9em;                              
+        }
+        .container{
+            height: 125px;
+            
+        }
+        .service_tags{
+            font-size: 1.0em;
+            font-weight: 600;
+            text-shadow: 5px 4px 2px rgba(0, 0, 0, 0.644);
+        }
+        .seeker_history_container{
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+        .card-container{
+            margin: 1rem 1em !important;
+            width: 350px;
+            height: 150px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .20), 0 6px 20px 0 rgba(0, 0, 0, .19);
+            border-radius: .5em;
+            overflow: hidden;
+        }
+        
+        .card-leftpart{
+            flex: 1;
+            flex-basis: 55%;
+            padding: 1em;
+            background-color: #717482;
+            color: white;
+            position: relative;
+        }
+        .center_icon{
+            position: absolute;
+            top: 50%;
+            right: 0;
+            background-color: whitesmoke;
+            width: 2em;
+            height: 2em; 
+            font-size: 1.2em;
+            color: #464850;
+            transform: translate(50%,-50%) rotate(45deg);
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .050), 0 6px 20px 0 rgba(0, 0, 0, .2);
+            transition: transform ease-in 350ms;
+        }
+        .card-leftpart i{
+           position: absolute;
+           right: 0;
+           top: 50%;
+           transform: translate(50%,-50%);
+           color: black;
+           font-size: 1.3em;
+        }
+        .card-rightpart{
+            flex-basis: 45%;
+            padding: .5em;
+            background-color: whitesmoke;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: center;
+            height: 100%;
+        }
+        .card-container:hover .center_icon{
+            transform: translate(50%,-50%) rotate(270deg);
+        }
+        .billviewlink:hover{
+            color: white;
+            text-decoration: none;
+        }
+</style>
+
+{% endblock %}
+
+{% block seeker_options %}
+    <li onclick="gotoSeekerDesk()">Seeker Dash</li>
+{% endblock %}
+
+{% block seeker_html %}
+    <h2 class="headding mt-4" style="width: 92%;">Hire History</h2>
+    <div class="filter_container">
+        <label for="filter_query">Filter By</label>
+        <select name="filter_query" id="filter_query">
+            <option value="request" selected>REQUESTED</option>
+            <option value="accept">ACCEPTED</option>
+            <option value="done">DONE</option>
+            <option value="reject">REJECTED</option>
+        </select>
+    </div>
+     <div class="row user_paginator" style="padding:  1em 0em;width: 92%; margin: auto;">
+            <div class="seeker_history_container">
+                {% for value in joblist %}
+                   {% if value.job_status == "request" %}
+
+                            <div class="card-container">
+                                <div class="card-leftpart">
+                                    <h4 class="service_tags">{{ value.jobName|title }}</h4>
+                                    <h4 class="text-h4">{{ value.assignDate}}</h4>
+                                    <h4 class="text-h4">Provider: {{ value.provider.user.username}}</h4>
+                                    <h4 class="text-h4">{{ value.provider.phonenumber}}</h4>
+                                    <span class="center_icon"></span>
+                                    {% if value.job_title == "electrician" %}
+                                        <i class="fas fa-charging-station"></i>
+                                    {% elif value.job_title == "furniture" %}
+                                            <i class="fas fa-chair"></i>
+                                    {% elif value.job_title == "painting" %}
+                                            <i class="fas fa-paint-roller"></i>
+                                    {% elif value.job_title == "cleaning" %}
+                                            <i class="fas fa-broom"></i>
+                                    {% else%}
+                                            <i class="fas fa-wrench"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="card-rightpart">
+                                    <button class="bill_btn" onclick="cancelrequest(event,'{{value.job_id}}')" >
+                                        <span class="left"><i class="far fa-times-circle"></i></span>
+                                        <span class="ml-2 right">Cancel</span>
+                                    </button>
+                                    <button class="info_btns" onclick="gotoJobDash(event,'{{value.job_id}}')">
+                                        <span class="left"><i class="far fa-question-circle"></i></span>
+                                        <span class="ml-2 right">Info</span>    
+                                    </button>
+                                </div>
+                            </div>
+                       
+
+                   {% elif value.job_status == "accept" %}
+
+                       
+                            <div class="card-container">
+                                <div class="card-leftpart">
+                                    <h4 class="service_tags">{{ value.jobName|title }}</h4>
+                                    <h4 class="text-h4">{{ value.assignDate}}</h4>
+                                    <h4 class="text-h4">{{ value.provider.user.username}}</h4>
+                                    <h4 class="text-h4">{{ value.provider.phonenumber}}</h4>
+                                    <span class="center_icon"></span>
+                                    {% if value.job_title == "electrician" %}
+                                        <i class="fas fa-charging-station"></i>
+                                    {% elif value.job_title == "furniture" %}
+                                            <i class="fas fa-chair"></i>
+                                    {% elif value.job_title == "painting" %}
+                                            <i class="fas fa-paint-roller"></i>
+                                    {% elif value.job_title == "cleaning" %}
+                                            <i class="fas fa-broom"></i>
+                                    {% else%}
+                                            <i class="fas fa-wrench"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="card-rightpart">
+                                    <button class="info_btns" onclick="gotoJobDash(event,'{{value.job_id}}')">
+                                        <span class="left"><i class="far fa-question-circle"></i></span>
+                                        <span class="ml-2 right">Info</span>    
+                                    </button>
+                                </div>
+                            </div>
+                        
+                   {% elif value.job_status == "done" %}
+
+                             <div class="card-container">
+                                <div class="card-leftpart">
+                                    <h4 class="service_tags">{{ value.jobName|title }}</h4>
+                                    <h4 class="text-h4">{{ value.assignDate}}</h4>
+                                    <h4 class="text-h4">{{ value.provider.user.username}}</h4>
+                                    <h4 class="text-h4">{{ value.provider.phonenumber}}</h4>
+                                    <span class="center_icon"></span>
+                                    {% if value.job_title == "electrician" %}
+                                        <i class="fas fa-charging-station"></i>
+                                    {% elif value.job_title == "furniture" %}
+                                            <i class="fas fa-chair"></i>
+                                    {% elif value.job_title == "painting" %}
+                                            <i class="fas fa-paint-roller"></i>
+                                    {% elif value.job_title == "cleaning" %}
+                                            <i class="fas fa-broom"></i>
+                                    {% else%}
+                                            <i class="fas fa-wrench"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="card-rightpart">
+                                    <a class="bill_btn billviewlink" href="{{value.payment.bill_pic.url}}">
+                                        <span class="left"><i class="fas fa-file-invoice"></i></span>
+                                        <span class="ml-2 right">ViewBill</span>
+                                    </a>
+                                    <button class="info_btns" onclick="gotoJobDash(event,'{{value.job_id}}')">
+                                        <span class="left"><i class="far fa-question-circle"></i></span>
+                                        <span class="ml-2 right">Info</span>    
+                                    </button>
+                                </div>
+                            </div>
+
+                   {% else %}
+
+                        
+                            <div class="card-container">
+                                <div class="card-leftpart">
+                                    <h4 class="service_tags">{{ value.jobName|title }}</h4>
+                                    <h4 class="text-h4">{{ value.assignDate}}</h4>
+                                    <h4 class="text-h4">{{ value.provider.user.username}}</h4>
+                                    <h4 class="text-h4">{{ value.provider.phonenumber}}</h4>
+                                    <span class="center_icon"></span>
+                                    {% if value.job_title == "electrician" %}
+                                        <i class="fas fa-charging-station"></i>
+                                    {% elif value.job_title == "furniture" %}
+                                            <i class="fas fa-chair"></i>
+                                    {% elif value.job_title == "painting" %}
+                                            <i class="fas fa-paint-roller"></i>
+                                    {% elif value.job_title == "cleaning" %}
+                                            <i class="fas fa-broom"></i>
+                                    {% else%}
+                                            <i class="fas fa-wrench"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="card-rightpart">
+                                    <button class="info_btns" onclick="gotoJobDash(event,'{{value.job_id}}')">
+                                        <span class="left"><i class="far fa-question-circle"></i></span>
+                                        <span class="ml-2 right">Info</span>    
+                                    </button>
+                                </div>
+                            </div>
+                        
+
+                   {% endif %}  
+            {% empty %}
+                <h1 class="errormsg">You have filters set, which may hide some results OR No date available sorry..</h1>
+            {% endfor %}
+            </div> 
+     </div>
+
+        <div class="padinator">
+            {% if joblist.has_previous %}
+            <a class="btn btn-primary btn-sm" href="?page=1" role="button" style="width:100px ;height: 30px;">&laquo; first</a>
+            <a class="btn btn-primary  btn-sm" href="?page={{ joblist.previous_page_number }}
+            {% if request.GET.search %}&search={{ request.GET.search}}{% endif %}
+            {% if request.GET.filter_query %}&filter_query={{ request.GET.filter_query}}{% endif %}" role="button" style="width:100px ;height: 30px;">previous</a>
+            {% endif %}
+
+            {% if joblist %}
+            <span class="current btn btn-warning  btn-sm" style="width:150px;height: 30px;">
+                Page {{ joblist.number }} of {{ joblist.paginator.num_pages }}.
+            </span> 
+            {% endif %}
+
+            {% if joblist.has_next %}
+            <a class="btn btn-primary  btn-sm" href="?page={{ joblist.next_page_number }}
+            {% if request.GET.search %}&search={{ request.GET.search}}{% endif %}
+            {% if request.GET.filter_query %}&filter_query={{ request.GET.filter_query}}{% endif %}" role="button" style="width:100px ;height: 30px;">next</a>
+            <a class="btn btn-primary  btn-sm" href="?page={{ joblist.paginator.num_pages }}
+            {% if request.GET.search %}&search={{ request.GET.search}}{% endif %}
+            {% if request.GET.filter_query %}&filter_query={{ request.GET.filter_query}}{% endif %}" role="button" style="width:100px ;height: 30px;">last &raquo;</a> 
+            {% endif %}
+
+        </div>
+    
+{% endblock %}
+
+{% block backendform %}
+        
+  
+
+{% endblock %}
+
+    
+
+{% block Scripts %}
+    <script>
+
+    window.onload = () =>{
+        let urls = window.location.href
+        const lists = urls.split('/')
+        if(lists[4] != null){
+            document.querySelector("div[data-attr='"+lists[4]+"']").classList.toggle('active')
+        }
+        const urlParams = new URL(urls)
+        if( urlParams.searchParams.get('filter_query') != null){
+            document.querySelector('#filter_query').value = urlParams.searchParams.get('filter_query')
+        }
+    }
+
+    const gotoSeekerDesk = () =>{
+            window.location.href = "{% url 'Seeker' service_catogory='All' %}"
+    }
+
+   
+    const service_list = document.querySelectorAll('.service-categoryitem')
+    for(let i=0; i< service_list.length ;i++){
+            service_list[i].addEventListener("click", (event) =>{    
+                const category = event.target.getAttribute('data-attr')
+                let urls = window.location.href
+                let urlParams = new URL(urls);
+                const filterquery = urlParams.searchParams.get('filter_query')
+                window.location.href = "{% url 'Seeker_history' service_catogory='category' %}".replace(/category/, category)+"?filter_query="+filterquery;
+        })
+        }
+    
+    document.querySelector('#filter_query').addEventListener('change', (event) =>{
+        const filter_query = event.target.value;
+        let urls = window.location.href
+        let urlParams = new URL(urls);
+        urlParams.searchParams.set('filter_query',filter_query)
+        window.location.href = urlParams.toString()
+    })
+   
+     const gotoJobDash = (event,jobid) =>{
+        event.stopImmediatePropagation();
+        localStorage.setItem("jobbackUrl",window.location.href)
+        window.location.href = "{% url 'jobInfo' job_id='123' %}".replace(/123/,jobid)
+    }
+
+    const cancelrequest = (event,jobid)=>{
+        let urls = "{% url 'Seeker_history' service_catogory='All' %}"
+        urls += "?filter_query=request"
+            event.stopImmediatePropagation()
+            $.ajax({
+                url : "{% url 'Cancel_work_ajax' %}",
+                type:"GET",
+                data : {'job_id':jobid},
+                success: function(data){
+                        window.location.href=urls
+                },
+                error :function(){
+                    alert("Something went wrong try after some time")
+                }
+
+            })
+    }
+    </script>
+{% endblock %}

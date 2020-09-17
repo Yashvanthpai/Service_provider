@@ -1,0 +1,869 @@
+<!DOCTYPE html> 
+{% load custumTags %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" data-auto-replace-svg="nest"></script>
+</head>
+
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-family: 'Roboto', ;
+    }
+    
+    .maincontainer {
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+        background-image: url("{% static 'background.jpg' %}");
+        background-position:center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    .asteriskField{
+        display: none;
+    }
+    
+
+    
+    .nav-container {
+        position: sticky;
+        width: 100%;
+        height: 3em;
+        background-color: transparent;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+    }
+    
+    .navlist {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        flex-basis: 40%;
+        margin-top: 1em;
+        height: 100%;
+    }
+    
+    .navlist .nav-li {
+        list-style: none;
+        position: relative;
+    }
+    
+    .navlist .nav-li::after {
+        content: " ";
+        position: absolute;
+        left: 0;
+        bottom: -3px;
+        border-bottom: 2px solid #9398ad;
+        width: 100%;
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform ease-in 150ms;
+    }
+    
+    .navlist .nav-li:hover::after {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+    
+    .navlist .nav-a {
+        text-decoration: none;
+        font-family: 'Open Sans', ;
+        letter-spacing: .05em;
+        font-size: 1em;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #9398ad;
+    }
+    
+    .content-container {
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+    }
+    .slidebar{
+        max-height: 100vh;
+        overflow: hidden;
+        flex-basis: 250px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19),0 6px 20px 0 rgba(0, 0, 0, .20);
+    }
+    .actual_content{
+        flex: 1;
+        max-height: 100%;
+        overflow: hidden;
+        scrollbar-width: thin;
+    }
+  
+    
+    .container {
+        position: relative;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        display: flex;
+        justify-content: space-around;
+        background-color: #e4e4e4;
+        border-radius: 0.4em;
+        padding: .75em;
+        cursor: pointer;
+        width: 100%;
+        height: 200px;
+        border: 1px solid #dadce0;
+    }
+
+    .container:hover{
+        color: white;
+        background-color: #46485086 ;
+    }
+    
+    .search-form{
+        width: 95%;
+        height: 3em;
+        margin: auto;
+        margin-top: 1.5em;
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    #search-label{
+        position: absolute;
+        background-color: #464850;
+        padding: 10px 15px;
+        border-radius: 35px;
+        color: white;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        margin: 0;
+    }
+    #search{
+        background-color: #46485086;
+        text-align: center !important;
+        border: 2px solid #46485086;
+        border-radius:15px;
+        height: 2em;
+        width: 100%;
+    }
+    #search::placeholder{
+        color: white
+    }
+
+    
+
+    .row{
+        width:100%;
+        margin: 0;
+                
+    }
+
+    .rows{
+        width: 100%;
+        height: calc(100% - 3.5em );
+        overflow: hidden;
+        background-color: transparent;
+        position: relative;
+    }
+
+    .columns{
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        scrollbar-width: thin;
+    }
+
+    .one {
+        position:absolute;
+        top:0;
+        left:0%;
+        transition:left  ease-in 100ms;
+    }
+
+    .two {
+        position:absolute;
+        top:0;
+        left:100%;
+        transition:left  ease-in 100ms;
+    }
+
+    
+    .text-content {
+        position: relative;
+        width: 700px;
+    }
+    
+    
+    .text-h4{
+        font-size: 1.0em;
+        font-weight: 600;
+    }
+   
+    .welcome{
+        color: rgb(50, 144, 221);
+        font-weight: 600;
+        font-size: 1.1em;
+        margin-right: 1em;
+    }
+
+    .checked {
+        color: orange;
+      }
+
+    .headding{
+          width: 92%;
+          margin: auto;
+          margin-top: 1em;
+          font-size: 1.1em;
+          font-weight: 800;
+          text-align: center;
+          box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+          padding: .7em 0em;
+          border-radius: .3em;
+    }
+
+
+    .padinator{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .padinator > *{
+        margin: 1em;
+    }
+
+    .pop-up-overlay{
+        display: block;
+        z-index: 15;
+        background-color: rgba(255, 255, 255, 0.616);
+        /* background-image: url("{% static 'background.jpg' %}"); */
+        background-position:center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform-origin: center;
+        transform: scale(0);
+        transition: transform -120ms ease-in-out 250ms;
+    }
+    .pop-up-user{
+        display: none;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+        z-index: 16;
+        width: 40%;
+        background-color: transparent;
+        opacity: 0;
+        transition: opacity ease-in-out ;
+    }
+    .user_container{
+        width: 100%;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        background-color: white;
+        padding: 2em 1.5em;
+        border-radius: 0.4em;
+    }
+    .userform{
+        width: 90%;
+        padding: 2em ;
+        border-radius: .45em;
+        height: auto;
+        margin: auto;
+        
+    }
+    
+    textarea{
+        background-color:transparent;
+        height: 90px;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,.2), 0 6px 20px 0 rgba(0,0,0,.2);
+    }
+    label{
+        font-size: 1em;
+        font-weight: 600;
+        color: black;
+    }
+
+    
+
+
+    .popup-close-btn{
+        background-color: transparent;
+        padding: 0.5em;
+        border: none;
+        position: absolute;
+        top: 0.25em;
+        right: 0.5em;
+        cursor: pointer;
+    }
+    .formhedding{
+        width: 75%;
+        margin: auto;
+        font-size: 1.5em;
+        font-weight: 700;
+        margin-top: .5em;
+    }
+
+
+    .slidebar_container h4{
+        text-shadow: 5px 5px 5px #3290dd8a;
+        color: rgb(0, 0, 0);
+        font-weight: 600;
+        font-size: 1.2em;
+        width: 175px;
+        padding: 0.25em 0.5em ;
+        text-align: center;
+        margin: auto;
+        background-color: transparent;
+        font-style: italic;
+        border-radius: 0.15em;
+        margin-top: 1em;
+    }
+    .slidebar_container p {
+        margin-top: 1em;
+        margin-left: 2em;
+        text-align: center;
+        padding: 0.25em;
+        padding-right: 10px;
+        border-top-left-radius: 1em;
+        border-bottom-left-radius: 1em;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        font-weight: 600;
+        font-size: .9em;
+        background-color: transparent;
+    }
+    
+     .slidebar_container a{
+        display: block;
+        width: 184px;
+        text-align: center;
+        margin-top: 1em;
+        margin-left: 2em;
+        padding: 0.25em;
+        padding-right: 10px;
+        border-top-left-radius: 1em;
+        border-bottom-left-radius: 1em;
+        color: black;
+        text-decoration: none;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        font-weight: 600;
+        font-size: .9em;
+        background-color: transparent;
+     }
+
+
+     .service_tag{
+         border: 1px solid orange;
+         background-color: rgba(255, 166, 0, 0.281);
+         border-radius: 1em;
+         padding: 0em .5em;
+         font-size: .75em;
+         color: black;
+     }
+     .service-categoryList > h5{
+         margin: 1em 0em 0.25em 0em;
+         text-align: center;
+         font-weight: 650;
+         color:#000000;
+         font-style: italic;
+         text-shadow: 3px 3px 3px rgba(0, 0, 0, .20);
+     }
+     .service-categoryRow{
+         width: 85%;
+         margin: auto;
+         display: flex;
+         flex-wrap: wrap;
+         justify-content: space-evenly;
+         align-items: center;
+     }
+     .service-categoryitem ,.dash-options{
+         width: 90px;
+         padding: .75em;
+         margin-top: .5em;
+         color: rgba(0, 0, 0, 0.671);
+         background-color: #d5d5d77e;
+         border-radius: .41em;
+         display: flex;
+         justify-items: center;
+         flex-direction: column;
+         align-items: center;
+         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),0 6px 20px 0 rgba(0, 0, 0, .19) ;
+         cursor: pointer;
+     }
+     .service-categoryitem.active{
+         background-color: #46485086;
+         color: white;
+     }
+     .service-categoryitem.active i{
+         transform: scale(1.3);
+     }
+     .dash-options{
+         text-align: center;
+     }
+     
+     .service-categoryitem i , .dash-options i{
+         pointer-events: none;
+         font-size: 1.4em;
+         transform: scale(1);
+         transform-origin: center;
+         transition: transform 300ms ease-in-out;
+     }
+     .service-categoryitem:hover, .dash-options:hover{
+         background-color: #46485086;
+     }
+     .service-categoryitem:hover i , .dash-options:hover i{
+         transform: scale(1.3);
+         color: white;
+     }
+     .service-categoryitem b , .dash-options b{
+         pointer-events: none;
+        font-size: .9em;
+     }
+     .service-categoryitem:hover b , .dash-options:hover b{
+         color: white;
+     }
+     .UserOptions{
+         width: 85%;
+         margin:auto;
+         list-style: none;
+         display: flex;
+         flex-direction: column;
+     }
+
+     .UserOptions li{
+         text-align: center;
+         font-weight: 600;
+         font-size: 1em;
+         padding: .15em 1em;
+         margin-top: .75em;
+         background-color: #d5d5d77e;
+         border-radius:15px;
+         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),0 6px 20px 0 rgba(0, 0, 0, .19) ;
+         transform-origin: center;
+         transform: scale(1);
+         transition: transform 250ms ease-in-out;
+         cursor: pointer;
+     }
+     .UserOptions li:hover{
+         transform: scale(1.05);
+         color: white;
+         background-color: #46485086;
+     }
+     .rightside_image{
+        width: 6em;
+        height: 7em;
+        border-radius: .45em;
+        object-fit: cover;
+    }
+    .user_paginator{
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+    .card-container{
+        width: 375px;
+        /* hieght take out */
+        height: 175px; 
+        margin: 1rem .5rem !important;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .20), 0 6px 20px 0 rgba(0, 0, 0, .19);
+        border-radius: .5em;
+        overflow: hidden;
+    }
+    .card-leftpart{
+        flex: 1;
+        align-self: stretch;
+        flex-basis: 50%;
+        padding: 1em;
+        background-color: #717482;
+        color: white;
+        position: relative;
+        box-sizing: content-box;
+    }
+    .center_icon{
+        position: absolute;
+        top: 50%;
+        right: 0;
+        background-color: whitesmoke;
+        width: 2em;
+        height: 2em; 
+        font-size: 1.2em;
+        color: #464850;
+        transform: translate(50%,-50%) rotate(45deg);
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .050), 0 6px 20px 0 rgba(0, 0, 0, .2);
+        transition: transform ease-in 350ms;
+    }
+    .card-leftpart i{
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translate(50%,-50%);
+        color: black;
+        font-size: 1.3em;
+    }
+    .card-rightpart{
+        flex-basis: 40%;
+        padding: .5em;
+        background-color: whitesmoke;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        align-self: stretch;
+        
+    }
+    .card-container:hover .center_icon{
+        transform: translate(50%,-50%) rotate(270deg);
+    }
+    .bill_btn,.info_btns{
+            margin-bottom: .5em;
+            border-radius: .35em;
+            overflow: hidden;
+            width: 115px !important;
+            height: 1.75em;
+            background-color: #717482;
+            border: none;
+            color: white;
+            width: auto;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .20), 0 6px 20px 0 rgba(0, 0, 0, .19);
+
+        }
+        .bill_btn .left,.info_btns .left{
+            background-color: white;
+            width: 2em;
+            color: #717482;
+            align-self: stretch;
+            display: flex;
+            position: relative;
+        }
+        .bill_btn .left::after,.info_btns .left::after{
+            content: " ";
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translate(50%,-50%) rotate(45deg);
+            width: .6em;
+            height: .6em;
+            background-color: white;
+            
+        }
+        .bill_btn .left i, .info_btns .left i{
+            align-self: center;
+            font-size: 1.2em;
+            transform: translate(-30%,-50%) scale(.9);
+        }
+        .bill_btn  .right ,.info_btns .right{
+            padding: .5em;  
+            font-size: .9em;                              
+        }
+    .errormsg{
+        width: 80%;
+        margin: auto;
+        text-shadow: 5px 3px 3px rgba(0, 0, 0, 0.419);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+        font-weight: 660;
+        font-size: 1.7em;
+        word-break: break-all;
+    }
+     
+</style>
+{% block styles %}
+<style>
+    input,select,textarea{
+        display: block;
+        background-color:rgb(231, 231, 231);
+        border: none;
+        color: black;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,.1), 0 6px 20px 0 rgba(0,0,0,.1);
+        padding: 0.25em 0.75em;
+        width: 100%;
+        border-radius: .05em;
+        overflow: hidden;
+    }
+    textarea,#id_jobName{
+        background-color: transparent;
+    }
+
+</style>
+{% endblock %}
+<body>
+    <div class="maincontainer" >
+        <div class="content-container" >
+            <div class="slidebar">
+                <div class="slidebar_container">
+                    <form  class="search-form" method="GET" >
+                        <label id="search-label"  for="search"><i class="fas fa-search"></i></label>
+                        <input  id='search' type="search" placeholder="Search"  name="search" {% if request.GET.search %} value="{{ request.GET.search }}" {% endif %}>
+                    </form>
+                    <div class="service-categoryList ">
+                        <h5>Service Catogory</h5>
+                        <div class="service-categoryRow">
+                            <div class="service-categoryitem" data-attr="All">
+                                <i class="fas fa-globe"></i>
+                                <b>All</b>
+                            </div>
+                            <div class="service-categoryitem" data-attr="Electrician">
+                                <i class="fas fa-charging-station"></i>
+                                <b>Electrician</b>
+                            </div>
+                            <div class=" service-categoryitem"  data-attr="Plumbing">
+                                <i class="fas fa-wrench"></i>
+                                <b>Plumbing</b>
+                            </div>
+                            <div class=" service-categoryitem"  data-attr="Painting">
+                                <i class="fas fa-paint-roller"></i>
+                                <b>Painting</b>
+                            </div>
+                            <div class=" service-categoryitem"  data-attr="Furniture">
+                                <i class="fas fa-chair"></i>
+                                <b>Furniture</b>
+                            </div>
+                            <div class=" service-categoryitem"  data-attr="Cleaning">
+                                <i class="fas fa-broom"></i>
+                                <b>Cleaning</b>
+                            </div>
+                        </div>
+                        <hr>
+                        <h5>Profile Option</h5>
+                        <ul class="UserOptions">
+                            {% block seeker_options %}
+                            <li onclick="gotoHireHistory()">Hire History</li>
+                            {% endblock %}
+                            <li onclick="logouts()">Logout</li>
+                        </ul>
+                         <div class="service-categoryRow mt-3">
+                            <div class="dash-options" onclick="gotoUserPage()">
+                                <i class="fas fa-user-edit"></i>
+                                <b>Edit Profile</b>
+                            </div>
+                            <div class="dash-options" onclick="gotoProviderDash()">
+                                <i class="fas fa-hands-helping"></i>
+                                <b>Provider Dash</b>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="actual_content">
+                <div class="nav-container">
+                    <ul class="navlist">
+                        <li class="nav-li" onclick="logouts()"><a class="nav-a" href="">Home</a></li>
+                        <li  style="margin-left:0;list-style: none;"><a  style="color:#464850;font-weight: 650;font-style: italic;text-shadow: 3px 3px 3px rgba(0, 0, 0, .20);">
+                        <span class="welcome">Welcome</span>{{ request.user.username }}</a></li>
+                    </ul>
+                </div>
+                <div class="rows">
+                         <div class="columns one">
+                            {% block seeker_html %}
+                            <h2 class="headding mt-4" style="width: 92%;">Service Providers</h2>
+                            <div class="user_paginator" style="width: 92%; margin: auto;padding: 1em 0em;">
+                                    {% for value in userlist %}      
+                                        
+                                        <div class="card-container" onclick='get_user_data("{{ value.uid }}")'>
+                                                <div class="card-leftpart">
+                                                    <h4 class="text-h4">{{ value.user.username }}</h4>
+                                                    <h4 class="text-h4">{{ value.phonenumber }}</h4>
+                                                    {% for x in "stars" %}
+                                                            {% if forloop.counter <= value.rating %}
+                                                                <span class="fa fa-star checked"></span>
+                                                            {% else %}
+                                                                <span class="fa fa-star"></span>
+                                                            {% endif %}
+                                                    {% endfor %}
+                                                    <span>( {{ value.rated_user_count}} )</span>
+                                                    <br>
+                                                    <span class="center_icon"></span>
+                                                        {% if value.service_catogory == "electrician" %}
+                                                            <i class="fas fa-charging-station"></i>
+                                                        {% elif value.service_catogory == "furniture" %}
+                                                                <i class="fas fa-chair"></i>
+                                                        {% elif value.service_catogory == "painting" %}
+                                                                <i class="fas fa-paint-roller"></i>
+                                                        {% elif value.service_catogory == "cleaning" %}
+                                                                <i class="fas fa-broom"></i>
+                                                        {% else%}
+                                                                <i class="fas fa-wrench"></i>
+                                                        {% endif %}
+                                                    <h4 class="text-h4">{{ value.service_catogory|title  }}</h4> 
+                                                    
+                                                    <button class="bill_btn" onclick="jobAssignment(event,'{{value.uid}}','{{ value.user.username }}','{{value.service_catogory}}')">
+                                                        <span class="left"><i class="fas fa-location-arrow"></i></span>
+                                                        <span class="ml-2 right">Hirehelp</span>
+                                                    </button>
+                                                </div>
+                                                <div class="card-rightpart">
+                                                    <img class="rightside_image" src="{{ value.profile_pic.url }}" alt="">
+                                                </div>
+                                        </div>
+                                    {% empty %}
+                                        <h1 class="errormsg">You have filters set, which may hide some results OR No date available sorry..</h1>
+                                    {% endfor %}
+                                    
+                            </div>
+                            <div class="padinator">
+                                {% if userlist.has_previous %}
+                                <a class="btn btn-primary btn-sm" href="?page=1" role="button" style="width:100px ;height: 30px;">&laquo; first</a>
+                                <a class="btn btn-primary  btn-sm" href="?page={{ userlist.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search}}{% endif %}" role="button" style="width:100px ;height: 30px;">previous</a>
+                                {% endif %}
+
+                                {% if userlist %}
+                                <span class="current btn btn-warning  btn-sm" style="width:150px;height: 30px;">
+                                    Page {{ userlist.number }} of {{ userlist.paginator.num_pages }}.
+                                </span> 
+                                {% endif %}
+
+                                {% if userlist.has_next %}
+                                <a class="btn btn-primary  btn-sm" href="?page={{ userlist.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search}}{% endif %}" role="button" style="width:100px ;height: 30px;">next</a>
+                                <a class="btn btn-primary  btn-sm" href="?page={{ userlist.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search}}{% endif %}" role="button" style="width:100px ;height: 30px;">last &raquo;</a> 
+                                {% endif %}
+            
+                            </div>
+                            {% endblock %}
+                        </div>
+                </div>
+            </div>
+            
+
+        </div>
+    </div>
+
+   <div class="pop-up-overlay">
+        
+    </div>
+
+   
+
+   
+    {% block backendform %}
+         <div class="pop-up-user">
+            <div class="user_container" >
+                <button class="popup-close-btn" onclick="close_popup_overlay('.pop-up-user')"><i class="fas fa-times fa-2x"></i></button>
+                 <form method="POST" class="userform">
+                      <h2>Job Assignment Form</h2>
+                      {% csrf_token %} {{ form }}
+                      <button class="btn btn-dark mt-3" type="submit">Assign Job</button>
+                 </form>
+            </div>
+        </div>
+    {% endblock %}
+
+   
+
+</body>
+
+<script>
+
+    function open_popup_overlay(pop_up){
+     $('.pop-up-overlay').css('transform','scale(1)')
+     $(pop_up).css('display','block')
+     $(pop_up).css('opacity','1')
+ }
+
+    function close_popup_overlay(pop_up){
+     $('#id_job_discription').val("")
+     $('.pop-up-overlay').css('transform','scale(0)')
+     $(pop_up).css('display','none')
+     $(pop_up).css('opacity','0')
+ }
+    
+    function get_user_data(uid){
+        localStorage.setItem("backUrl",window.location.href)
+        window.location.href = "{% url 'userhome' user_id='123' %}".replace(/123/,uid)
+    }
+
+    function logouts(){
+     var ans = confirm("{{ request.user.username }} sure you want to exit (Logout) ?")
+     if( ans == true){
+            window.location.href="{% url 'logout' %}"
+     }
+ }
+
+    const gotoProviderDash = () =>{
+            window.location.href = "{% url 'Provider' service_status='request' %}"
+        }
+    
+    const gotoUserPage = () =>{
+        localStorage.setItem("backUrl",window.location.href)
+        window.location.href = "{% url 'userhome' user_id=request.user.applicationuser.uid %}"
+    }
+</script>
+{% block Scripts %}
+    <script>
+         window.onload = () =>{
+            let urls = window.location.href
+            const lists = urls.split('/')
+            if(lists[4] != null){
+                document.querySelector("div[data-attr='"+lists[4]+"']").classList.toggle('active')
+            }
+        }
+
+        const gotoHireHistory = () =>{
+             let urls = "{% url 'Seeker_history' service_catogory='All' %}"
+             urls += "?filter_query=request"
+             window.location.href=urls
+        }
+        
+        const jobAssignment = (event,provider_id,provider_name,service) =>{
+            event.stopImmediatePropagation();
+            var seeker_id = '{{ request.user.applicationuser.uid }}'
+            var seeker_name = '{{ request.user.username }}'
+            open_popup_overlay('.pop-up-user')
+            $('label[for="id_seeker_id"]').css('display','none')
+            $('label[for="id_provider_id"]').css('display','none')
+            $('#id_job_title').val(service)
+            $('#id_job_title').prop('disabled', 'disabled');
+            $('#id_seeker_id').val(seeker_id)
+            $('#id_provider_id').val(provider_id)
+            $('#id_seeker_name').val(seeker_name)
+            $('#id_provider_name').val(provider_name)
+        }
+        
+        const service_list = document.querySelectorAll('.service-categoryitem')
+        for(let i=0; i< service_list.length ;i++){
+            service_list[i].addEventListener("click", (event) =>{    
+                const category = event.target.getAttribute('data-attr')
+                window.location.href = "{% url 'Seeker' service_catogory='category' %}".replace(/category/, category);
+        })
+    }
+    
+    document.querySelector('.userform').onsubmit = function(event){
+        event.preventDefault()
+        close_popup_overlay('.pop-up-user')
+        $('#id_job_title').prop('disabled', false);
+        document.querySelector('.userform').submit()
+    }
+    </script>
+{% endblock %}
+
+</html>

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from django.urls import reverse
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -125,7 +126,8 @@ STATICFILES_DIRS=[
     os.path.join(BASE_DIR,'static')
 ]
 
-LOGIN_REDIRECT_URL='/home/'
+LOGIN_REDIRECT_URL= '/seekerHome/All/'
+LOGIN_URL ='/login/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 
