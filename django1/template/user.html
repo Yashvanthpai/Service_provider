@@ -122,6 +122,7 @@
     }
     .container_content{
         width: 100%;
+        min-height: calc(100vh - 15em);
         padding: 1em 0em;
         display: flex;
         justify-content: space-evenly;
@@ -306,13 +307,16 @@
     .checked {
         color: orange;
       }
-    .errormsg{
-        
-        text-shadow: 5px 3px 3px rgba(0, 0, 0, 0.719);
-        position: absolute;
-        left: 50%;
-        top: 50%;
-    }
+   .errormsg{
+        width: 80%;
+        text-shadow: 5px 3px 3px rgba(0, 0, 0, 0.419);
+        font-weight: 660;
+        font-size: 1.7em;
+        word-break: break-all;
+        text-align: center;
+        align-self: center;
+        height: 70px;
+    }   
     
 
     </style>
@@ -344,7 +348,6 @@
                     <div class="image-container">
                         <img class="userimage" src="{{image}}" alt="">
                         <div class="filter_container">
-                            {% if commentobj %}
                             <label for="filter_rating">Filter By Rating</label>
                             <select name="filter_rating" id="filter_rating">
                                 <option value="accending" selected>ACCENDING</option>
@@ -359,7 +362,6 @@
                                 <option value="painting">PAINTING</option>
                                 <option value="furniture">FURNITURE</option>
                             </select>
-                            {% endif %}
                             <a class="btn btn-light back" onclick="goback()">Go Back</a>
                         </div>
                     </div>
@@ -367,7 +369,7 @@
                     <div class="container_content">
                     {% for value in commentobj %}
                             
-                            <div class="card-container">
+                            <div class="card-container" onclick="gotoJobDash('{{value.job_id}}')">
                                     <div class="card-leftpart">
                                         <h5 class="commenter">{{value.job.seeker.user.username}}<span class="commentdate">{{value.timestamp}}</span></h5>
                                         <p class="comment">{{value.content}}</p>
@@ -396,8 +398,7 @@
                                     </div>
                             </div>
                     {% empty %}
-                        <h1 class="errormsg">User is not been rated yet.</h1>
-                        
+                        <h1 class="errormsg">You have filters set, which may hide some results OR No date available sorry..</h1>
                     {% endfor %}      
                     </div>
                 </div>
@@ -454,6 +455,12 @@
         
         const goback = ()=>{
             window.location.href = localStorage.getItem("backUrl")
+        }
+
+        const gotoJobDash = (jobid) =>{
+            localStorage.setItem("backUrl", localStorage.getItem("jobbackUrl"))
+            localStorage.setItem("jobbackUrl",window.location.href)
+            window.location.href = "{% url 'jobInfo' job_id='123' %}".replace(/123/,jobid)
         }
     </script>
 </body>

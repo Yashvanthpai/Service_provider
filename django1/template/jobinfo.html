@@ -33,14 +33,79 @@
         background-repeat: no-repeat;
         background-attachment: fixed;
         background-size: cover;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        position: relative;
     }
+    
+    
+    .nav-container {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        height: 3em;
+        background-color: transparent;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+    }
+    
+    .navlist {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        flex-basis: 40%;
+        margin-top: 1em;
+        height: 100%;
+    }
+    
+    .navlist .nav-li {
+        list-style: none;
+        position: relative;
+    }
+    
+    .navlist .nav-li::after {
+        content: " ";
+        position: absolute;
+        left: 0;
+        bottom: -3px;
+        border-bottom: 2px solid #9398ad;
+        width: 100%;
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform ease-in 150ms;
+    }
+    
+    .navlist .nav-li:hover::after {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+    
+    .navlist .nav-a {
+        text-decoration: none;
+        font-family: 'Open Sans', ;
+        letter-spacing: .05em;
+        font-size: 1em;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #9398ad;
+    }
+     .welcome{
+        color: rgb(50, 144, 221);
+        font-weight: 600;
+        font-size: 1.1em;
+        margin-right: 1em;
+    }
+
     .content-container {
-        height: 85vh;
+        height: 80vh;
         width: 90vW;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-55%);
         display: flex;
         justify-content: center;
         position: relative;
@@ -49,9 +114,9 @@
         position: absolute;
         top: 0;
         left: 50%;
-        width: 250px;
-        height: 3em;
-        border-radius: 0.45em;
+        width: 200px;
+        height: 2.5em;
+        border-radius: 0.25em;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
         transform: translate(-50%,-50%);
         background-color: white;
@@ -62,10 +127,9 @@
         top: 0;
         left: 50%;
         transform: translate(-50%,-50%);
-        text-transform: uppercase;
         font-style: italic;
-        font-weight: 650;
-        text-shadow: 5px 4px 3px rgba(0, 0, 0, 0.41);
+        font-weight: 600;
+        text-shadow: 4px 3px 3px rgba(0, 0, 0, 0.41);
     }
     .faws-icon{
         font-size: 2.5em;
@@ -232,12 +296,19 @@
         border-radius: .45em;
         object-fit: cover;
     }
-    .back{
-        height: 32px;
-        line-height: 16px;
-        margin-top: 1em;
+    .back,.updatedbtn{
+        height: 25px;
+        line-height: 8px;
+        margin-top: .5em;
         font-weight: 600;
         color: black !important;
+        font-size: .9em;
+    }
+    .billgenbtn{
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
     }
    
     .checked {
@@ -252,31 +323,121 @@
         font-size: 1.5em;
         word-break: break-all;
     }
-     .jobback{
+    
+
+    .pop-up-overlay{
+        display: block;
+        z-index: 15;
+        background-color: rgba(255, 255, 255, 0.616);
+        /* background-image: url("{% static 'background.jpg' %}"); */
+        background-position:center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform-origin: center;
+        transform: scale(0);
+        transition: transform -120ms ease-in-out 250ms;
+    }
+    .pop-up-job,.pop-up-rating,.pop-up-bill{
+        display: none;
         position: absolute;
         left: 50%;
-        bottom: 0;
-        transform: translate(-50%,50%);
-        width: 150px;
-        height: 40px;
-        line-height: 20px;
-        text-transform: uppercase;
-        font-size: 1.2em;
-        font-style: italic;
-        font-weight: 650;
-        color: black !important;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .050), 0 6px 20px 0 rgba(0, 0, 0, .2);
-        z-index: 15;
+        top: 50%;
+        transform: translate(-50%,-50%);
+        z-index: 16;
+        width: 40%;
+        background-color: transparent;
+        opacity: 0;
+        transition: opacity ease-in-out ;
     }
-   
+    .popup-close-btn{
+        background-color: transparent;
+        padding: 0.5em;
+        border: none;
+        position: absolute;
+        top: 0.25em;
+        right: 0.5em;
+        cursor: pointer;
+    }
+    .user_container{
+        width: 100%;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19), 0 6px 20px 0 rgba(0, 0, 0, .20);
+        background-color: white;
+        padding: 2em 1.5em;
+        border-radius: 0.4em;
+    }
+    .jobform{
+        width: 90%;
+        padding: 2em ;
+        border-radius: .45em;
+        height: auto;
+        margin: auto;
+        
+    }
+    
+    textarea{
+        background-color:transparent;
+        height: 90px;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,.2), 0 6px 20px 0 rgba(0,0,0,.2);
+    }
+    label{
+        font-size: 1em;
+        font-weight: 600;
+        color: black;
+    }
+    input,select,textarea{
+        display: block;
+        background-color:rgb(231, 231, 231);
+        border: none;
+        color: black;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,.1), 0 6px 20px 0 rgba(0,0,0,.1);
+        padding: 0.25em 0.75em;
+        width: 100%;
+        border-radius: .05em;
+        overflow: hidden;
+    }
+    textarea,#id_jobName,#id_resource_cost,#id_labour_cost,#id_bill_pic,#payment_status{
+        background-color: transparent;
+    }
+    label[for="id_bill_pic"]{
+        display: block;
+    }
+    label[for="bill_pic-clear_id"],#bill_pic-clear_id{
+        display: none;
+    }
+    .goback{
+        border: 1px solid #9496a2;
+        border-radius: .75em;
+        padding: 0.2em 1.5em;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .19),0 6px 20px 0 rgba(0, 0, 0, .20);
+         cursor: pointer !important;
+    }
+    .goback:hover{
+        background-color: #9496a2;
+        color: white !important;
+       
+    }
     </style>
 </head>
 <body>
      <div class="maincontainer" >
+         <div class="nav-container">
+                    <ul class="navlist">
+                        <li  style="margin-left:0;list-style: none;"><a class="goback"  style="color:#000000;font-weight: 650;font-style: italic;text-shadow: 3px 3px 3px rgba(0, 0, 0, .20);" onclick="goback()" >Go Back</a></li>
+                    </ul>
+                    <ul class="navlist">
+                        <li  style="margin-left:0;list-style: none;"><a  style="color:#464850;font-weight: 650;font-style: italic;text-shadow: 3px 3px 3px rgba(0, 0, 0, .20);"><span class="welcome">Welcome</span>{{ request.user.username }}</a></li>
+                    </ul>
+         </div>
         <div class="content-container" >
            <span class="hedding-bk"></span>
            <h1 class="hedding">Job Details</h1>
-           <a onclick="goback()" class="btn btn-light jobback">Go Back</a>
+           
 
             <div class="containers">
                   <div class="card-container " onclick="gotoUser('{{Jobobj.provider.uid}}')" data-title="Service Provider" style="cursor: pointer;">
@@ -316,7 +477,7 @@
                                            <img class="rightside_image" src="{{Jobobj.provider.profile_pic.url}}" alt="">  
                                     </div>
                   </div> 
-                  <div class="card-container " data-title="Service Seeker">
+                  <div class="card-container " onclick="gotoUser('{{Jobobj.seeker.uid}}')" data-title="Service Seeker" style="cursor: pointer;">
                                      <div class="card-rightpart">
                                             <img class="rightside_image" src="{{Jobobj.seeker.profile_pic.url}}" alt=""> 
                                     </div>
@@ -351,6 +512,11 @@
                                                 <th>Address</th>
                                                 <td>{{Jobobj.seeker.address}}</td>
                                             </tr>
+                                            {% if ratingform %}
+                                             <tr>
+                                                <th ><a class="btn btn-light updatedbtn" onclick="openRatingForm(event,'{{Jobobj.job_id}}')" ><i class="fa fa-star"></i> Rate user for job</a></th>
+                                            </tr>
+                                            {% endif %}
                                         </table> 
                                     </div>
                                    
@@ -373,7 +539,7 @@
                                             <tr>
                                                 <th>Job Status</th>
                                                 <td>{{Jobobj.job_status}}</td>
-                                            </tr>
+                                            </tr> 
                                             <tr>
                                                 <th>Bill Status</th>
                                                 <td>{% if Jobobj.payment %}
@@ -387,6 +553,13 @@
                                                 <th>Description</th>
                                                 <td>{{Jobobj.job_discription}}</td>
                                             </tr>
+                                            {% if jobform %}
+                                             <tr>
+                                                <th >
+                                                    <a onclick="openJobForm()"  class="btn btn-light updatedbtn" ><i class="fas fa-pen"></i> Update Job</a>
+                                                </th>
+                                            </tr>
+                                            {% endif %}
                                         </table> 
                                     </div>
                                     <div class="card-rightpart">
@@ -428,12 +601,24 @@
                                     <td>Rs. {{Jobobj.payment.ammount}}</td>
                                 </tr>
                                 <tr>
-                                    <th>View Bill</th>
-                                    <td><a href="{{Jobobj.payment.bill_pic.url}}" class="btn btn-light back" >View Bill</a></td>
+                                    {% if billform %}
+
+                                    <th ><a onclick="openBillForm('{{Jobobj.job_id}}')" class="btn btn-light updatedbtn" ><i class="fas fa-pen"></i> Update Bill</a></th>
+                                    
+                                    {% endif %}
+                                    <th><a href="{{Jobobj.payment.bill_pic.url}}" class="btn btn-light back" ><i class="far fa-eye"></i> View Bill</a></th>
                                 </tr>
                             </table>                     
-                            {% else %} 
-                                  <h1 class="errormsg">Bill is not yet genarated.</h1>                      
+                            {% else %}
+                               
+                                   {% if billform %}
+
+                                    <a onclick="openBillForm('{{Jobobj.job_id}}')" class="btn btn-light billgenbtn updatedbtn" ><i class="fas fa-pen"></i> Update Bill</a>
+                                    
+                                    {% else %}
+                                        <h1 class="errormsg">Bill is not yet genarated.</h1>    
+                                    {% endif %}
+                                                  
                             {% endif %}
                             
                         </div>
@@ -443,7 +628,75 @@
                 
         </div>
     </div>
+   
+   
+    <div class="pop-up-overlay">
+        
+    </div>
+    {% if jobform %}
+        <div class="pop-up-job">
+                    <div class="user_container" >
+                        <button class="popup-close-btn" onclick="close_popup_overlay('.pop-up-job')"><i class="fas fa-times fa-2x"></i></button>
+                        <form method="POST" class="jobform">
+                            <h2>Job update Form</h2>
+                            {% csrf_token %} {{ jobform }}
+                            <input style="display: none;" type="text" name="formType" value="jobform">
+                            <button class="btn btn-dark mt-3" type="submit">Update Job</button>
+                        </form>
+                    </div>
+        </div>
+   {% endif %}
+    
+    {% if ratingform %}
+        <div class="pop-up-rating">
+                    <div class="user_container" >
+                        <button class="popup-close-btn" onclick="close_popup_overlay('.pop-up-rating')"><i class="fas fa-times fa-2x"></i></button>
+                        <form method="POST" class="jobform">
+                            <h2>Rateing Form</h2>
+                            {% csrf_token %} {{ ratingform }}
+                            <label>Rating <span id="rating_count">0</span>/5</label>
+                            <br>
+                            <input style="display: none;" type="text" name="formType" value="ratingform">
+                            <button class="btn btn-dark mt-3" type="submit">Rate</button>
+                        </form>
+                    </div>
+        </div>
+   {% endif %}
+   {% if billform %}
+        <div class="pop-up-bill">
+                    <div class="user_container" >
+                        <button class="popup-close-btn" onclick="close_popup_overlay('.pop-up-bill')"><i class="fas fa-times fa-2x"></i></button>
+                        <form method="POST" enctype="multipart/form-data" class="jobform">
+                            <h2>Bill update Form</h2>
+                            <label for="payment_status">Select Payment Status:</label>    
+                            <select name="payment_status" id="payment_status" value="{{Jobobj.payment.payment_status}}">
+                                <option value="pending">Pending</option>
+                                <option value="done">Paid</option>
+                            </select>
+                            {% csrf_token %} {{ billform }}
+                            <input style="display: none;" type="text" name="formType" value="billform">
+                            <button class="btn btn-dark mt-3" type="submit">Update</button>
+                        </form>
+                    </div>
+        </div>
+   {% endif %}
+
     <script>
+         $('input[name="rating"]').on('change',function(event){
+                    var rating = event.target.value
+                    $('#rating_count').text(rating)
+            })
+         function open_popup_overlay(pop_up){
+            $('.pop-up-overlay').css('transform','scale(1)')
+            $(pop_up).css('display','block')
+            $(pop_up).css('opacity','1')
+        }
+
+            function close_popup_overlay(pop_up){
+            $('.pop-up-overlay').css('transform','scale(0)')
+            $(pop_up).css('display','none')
+            $(pop_up).css('opacity','0')
+        }
          function gotoUser(uid){
                 localStorage.setItem("backUrl",window.location.href)
                 window.location.href = "{% url 'userhome' user_id='123' %}".replace(/123/,uid)
@@ -451,7 +704,61 @@
         const goback = ()=>{
             window.location.href = localStorage.getItem("jobbackUrl")
         }
+
+        {% if jobform %}
+
+            const openJobForm = () =>{
+                open_popup_overlay('.pop-up-job')
+                $('label[for="id_seeker_id"]').css('display','none')
+                $('label[for="id_provider_id"]').css('display','none')
+                $('#id_job_title').val(service)
+                $('#id_job_title').prop('disabled', 'disabled');
+            }
+
+            document.querySelector('.jobform').onsubmit = function(event){
+                event.preventDefault()
+                close_popup_overlay('.pop-up-user')
+                $('#id_job_title').prop('disabled', false);
+                document.querySelector('.jobform').submit()
+            }
+
+        {% endif %}
+
+        {% if ratingform %}
+            const openRatingForm = (event,job_id) =>{
+                event.stopImmediatePropagation();
+                open_popup_overlay('.pop-up-rating')
+                $('#id_comment_job_id').val(job_id);
+                $('label[for="id_comment_job_id"]').css('display','none')
+                
+            }
+
+            document.querySelector('.ratingform').onsubmit = function(event){
+                event.preventDefault()
+                close_popup_overlay('.pop-up-user')
+                document.querySelector('.ratingform').submit()
+            }
+
+           
+        {% endif %}
+        
+        
+
+       
+        {% if billform %}
+        
+            const openBillForm = (job_id) =>{
+                open_popup_overlay('.pop-up-bill')
+                $('#id_job_id').val(job_id);
+                $('#id_job_id').prop('readonly','readonly')
+            }
+            document.querySelector('.billform').onsubmit = function(event){
+                event.preventDefault()
+                close_popup_overlay('.pop-up-user')
+                document.querySelector('.billform').submit()
+            }
+
+        {% endif %}
     </script>  
-  
 </body>
 </html>

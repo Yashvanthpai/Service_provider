@@ -522,7 +522,7 @@
 </style>
 {% block styles %}
     <style>
-    .userform,.billform{
+    .billform{
         width: 90%;
         padding: 2em ;
         border-radius: .45em;
@@ -709,9 +709,9 @@
                                     <span class="ml-2 right">ViewBill</span>
                                 </a>
                                 {% if value.job_id|Check_rated == 'no' %}
-                                <button class="info_btns" onclick="submitComment(event,'{{value.job_id}}')">
+                                <button class="info_btns">
                                     <span class="left"><i class="far fa fa-star"></i></span>
-                                    <span class="ml-2 right">Rate</span>    
+                                    <span class="ml-2 right">NotRated</span>    
                                 </button>
                                 {% else %}
                                  <button class="info_btns">
@@ -760,18 +760,7 @@
    
     {% block backendform %}
         
-        <div class="pop-up-user">
-            <div class="user_container">
-                <button class="popup-close-btn" onclick="close_popup_overlay('.pop-up-user')"><i class="fas fa-times fa-2x"></i></button>
-                <form method="POST" class="userform">
-                      <h2>Rate Users Work</h2>
-                      {% csrf_token %} {{ ratingform }}
-                      <label>Rating <span id="rating_count">0</span>/5</label>
-                      <br>
-                      <button class="btn btn-dark mt-3" type="submit">Rate</button>
-                 </form>
-            </div>
-        </div>
+        
         <div class="pop-up-bill">
             <div class="user_container">
                 <button class="popup-close-btn" onclick="close_popup_overlay('.pop-up-bill')"><i class="fas fa-times fa-2x"></i></button>
@@ -888,12 +877,7 @@
         }
 
 
-        function submitComment(event,job_id){
-            event.stopImmediatePropagation();
-            $('#id_comment_job_id').val(job_id);
-            $('label[for="id_job_id"]').css('display','none')
-            open_popup_overlay('.pop-up-user')
-        }
+        
          function submitBill(event,job_id){
             event.stopImmediatePropagation();
             open_popup_overlay('.pop-up-bill')
@@ -901,16 +885,9 @@
             $('#id_job_id').prop('readonly','readonly')
         }
 
-        $('#id_rating').on('change',function(event){
-            var rating = event.target.value
-            $('#rating_count').text(rating)
-        })
+       
 
-        document.querySelector('.userform').onsubmit = function(event){
-                event.preventDefault()
-                close_popup_overlay('.pop-up-user')
-                document.querySelector('.userform').submit()
-        }
+        
         document.querySelector('.billform').onsubmit = function(event){
                 event.preventDefault()
                 close_popup_overlay('.pop-up-bill')

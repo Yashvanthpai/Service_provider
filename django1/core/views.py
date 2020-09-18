@@ -8,6 +8,7 @@ from django.db.models import Q
 from json import dumps
 from django.forms.models import model_to_dict
 from django.core.paginator import Paginator
+import math
 # Create your views here.
 
 def index(request):
@@ -71,6 +72,7 @@ def seeker_home(request,service_catogory = None):
         jobAssignmentForm_obj = jobAssignmentForm(request.POST)
         if jobAssignmentForm_obj.is_valid():
             jobAssignmentForm_obj.save()
+            jobAssignmentForm_obj = jobAssignmentForm()
     else:
         jobAssignmentForm_obj = jobAssignmentForm()
     if service_catogory == "All":
@@ -101,6 +103,14 @@ def seeker_history(request,service_catogory=None,*args,**kwargs):
     Number_of_objects_per_page = 15
     context={}
     
+    if request.method == "POST":
+            ratingform = Comment_form(request.POST or None)
+            if ratingform.is_valid():
+                ratingform.save()
+            ratingform = Comment_form()
+    else:
+        ratingform = Comment_form()
+    
     if service_catogory == "All":
         obj = Job.objects.filter(seeker__user__username=request.user.username)
     else:
@@ -123,32 +133,24 @@ def seeker_history(request,service_catogory=None,*args,**kwargs):
         obj = paginated_object_list.get_page(page_number)
     
     context['joblist']=obj
-
+    context['ratingform']=ratingform
     return render(request,'seekerHistory.html',context)
 
 @login_required
 def provider_home(request,service_status="request",*args,**kwargs):
     Number_of_objects_per_page = 15
     context={}
-
     
+
     if request.method == "POST":
-        ratingform = Comment_form(request.POST or None)
         billform = Payment_form(request.POST,request.FILES or None)
 
         if billform.is_valid():
                 billform.save()
                 billform = Payment_form()
-                ratingform = Comment_form()
-
-        elif ratingform.is_valid():
-            ratingform.save()
-            ratingform = Comment_form()
-            billform = Payment_form()
 
     else:
         billform = Payment_form()
-        ratingform = Comment_form()
 
     obj = Job.objects.filter( Q(provider__user__username=request.user.username) &
                               Q(job_status=service_status))
@@ -165,7 +167,7 @@ def provider_home(request,service_status="request",*args,**kwargs):
     
     context['joblist']=obj
     context['billform']=billform
-    context['ratingform']=ratingform
+    
 
     
     return render(request,'provider.html',context)
@@ -216,10 +218,92 @@ def user_page(request,user_id=None):
     context['image']= Applicationuser.objects.get(uid=user_id).profile_pic.url
     return render(request,'user.html',context)
 
+def update_user_rating(current_rating,new_rating,job_id):
+    job_obj = Job.objects.get(job_id=job_id)
+    user_obj = Applicationuser.objects.filter(uid=job_obj.provider.uid).first()
+    total_user_count = user_obj.rated_user_count
+    current_rating = current_rating * total_user_count - current_rating
+    new_rating = math.ceil(((float(current_rating)+float(new_rating))*float(total_user_count))/(float(total_user_count)))
+    user_obj =  Applicationuser.objects.filter(uid=job_obj.provider.uid).update(rating=new_rating)
+
+
 def job_info(request,job_id=None):
     context={}
     jobj = Job.objects.get(job_id=job_id)
-    context["Jobobj"]=jobj    
+
+    
+    jobform=None
+    if request.user.applicationuser.uid == jobj.seeker.uid and jobj.job_status not in "done reject" :
+        if request.method == "POST" and request.POST.get('formType') =='jobform':
+            jobform = jobAssignmentForm(request.POST)
+
+            if jobform.is_valid():
+                jobj = Job.objects.filter(job_id=job_id).update(
+                    job_discription = jobform.cleaned_data['job_discription'],
+                    jobName = jobform.cleaned_data['jobName']
+                )
+                jobform = jobAssignmentForm(instance=jobj)
+        else:
+            jobform = jobAssignmentForm(instance=jobj)
+    
+    ratingform = None
+    if request.user.applicationuser.uid == jobj.seeker.uid and jobj.job_status =='done':
+        comment_obj = Comment.objects.filter(job__job_id = int(job_id)).first() or None
+        if request.method == "POST" and request.POST.get('formType') =='ratingform':
+               ratingform = Comment_form(request.POST)
+               if comment_obj:
+                   if ratingform.is_valid():
+                        current_rating = int(comment_obj.rating)
+                        new_rating = int(ratingform.cleaned_data['rating'])
+                        comment_obj = Comment.objects.filter(job__job_id = int(job_id)).update(
+                            content = ratingform.cleaned_data['content'],
+                            rating = ratingform.cleaned_data['rating']
+                        )
+                        update_user_rating(current_rating,new_rating,job_id)
+                        comment_obj = Comment.objects.filter(job__job_id = int(job_id)).first()
+                        ratingform = Comment_form(instance=comment_obj)
+               else:
+                   if ratingform.is_valid():
+                        ratingform.save()
+                        comment_obj = Comment.objects.filter(job__job_id = int(job_id)).first()
+                        ratingform = Comment_form(instance=comment_obj)
+        else:
+            if comment_obj:
+                ratingform = Comment_form(instance=comment_obj)
+            else:
+               ratingform = Comment_form() 
+    
+    billform=None
+    if request.user.applicationuser.uid == jobj.provider.uid and jobj.job_status !='request':
+        bill_obj = Job.objects.filter(payment__jobId= int(job_id)).first().payment or None
+        if request.method == "POST" and request.POST.get('formType') =='billform':
+               billform = Payment_form(request.POST,request.FILES)
+               if bill_obj:
+                   if billform.is_valid():
+                        bill_obj.labour_cost =billform.cleaned_data['labour_cost']
+                        bill_obj.resource_cost=billform.cleaned_data['resource_cost']
+                        bill_obj.payment_status = request.POST.get('payment_status','pending')
+                        if request.FILES.get('bill_pic'):
+                            bill_obj.bill_pic=request.FILES.get('bill_pic')
+                        bill_obj.ammount = int(billform.cleaned_data['labour_cost'])+int(billform.cleaned_data['resource_cost'])
+                        bill_obj.save()
+                        bill_obj = Payment.objects.filter(jobId = int(job_id)).first()
+                        billform = Payment_form(instance=bill_obj)
+               else:
+                   if billform.is_valid():
+                        billform.save()
+                        bill_obj = Payment.objects.filter(jobId = int(job_id)).first()
+                        billform = Payment_form(instance=bill_obj)
+        else:
+            if bill_obj:
+                billform = Payment_form(instance=bill_obj)
+            else:
+               billform = Payment_form() 
+    
+    context['jobform']=jobform
+    context['ratingform']=ratingform
+    context['billform']=billform
+    context["Jobobj"]=Job.objects.get(job_id=job_id)    
     return render(request,"jobinfo.html",context)
 
 
