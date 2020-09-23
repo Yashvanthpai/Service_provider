@@ -41,7 +41,7 @@ class Payment_form(forms.ModelForm):
         labels ={
             'job_id':"Job Id",
             'labour_cost':"Enter Labour cost",
-            'resource_cost':"Enter Labour cost",
+            'resource_cost':"Enter Resource cost",
             'bill_pic':"Choose Bill image"
         }
         widgets ={
@@ -105,7 +105,7 @@ class Comment_form(forms.ModelForm):
         user_obj = Applicationuser.objects.get(uid=job_obj.provider.uid)
 
         user_obj.rating = ceil(
-            ((float(user_obj.rating)+float(self.cleaned_data['rating']))*(float(user_obj.rated_user_count)+1))/(float(user_obj.rated_user_count)+1)
+            ((float(user_obj.rating)*(float(user_obj.rated_user_count)))+float(self.cleaned_data['rating']))/(float(user_obj.rated_user_count)+1)
             )
         user_obj.rated_user_count = F('rated_user_count')+1
         user_obj = user_obj.save()

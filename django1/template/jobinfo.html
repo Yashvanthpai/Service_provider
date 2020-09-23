@@ -1,7 +1,8 @@
-<!DOCTYPE html>
+
 {% load custumTags %}
 {% load static %}
 {% load crispy_forms_tags %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -371,7 +372,7 @@
         padding: 2em 1.5em;
         border-radius: 0.4em;
     }
-    .jobform{
+    .jobform,.billform,.ratingform{
         width: 90%;
         padding: 2em ;
         border-radius: .45em;
@@ -556,7 +557,7 @@
                                             {% if jobform %}
                                              <tr>
                                                 <th >
-                                                    <a onclick="openJobForm()"  class="btn btn-light updatedbtn" ><i class="fas fa-pen"></i> Update Job</a>
+                                                    <a onclick='openJobForm("{{Jobobj.seeker.uid}}","{{Jobobj.provider.uid}}","{{Jobobj.seeker.user.username|title}}","{{Jobobj.provider.user.username|title}}")'  class="btn btn-light updatedbtn" ><i class="fas fa-pen"></i> Update Job</a>
                                                 </th>
                                             </tr>
                                             {% endif %}
@@ -651,7 +652,7 @@
         <div class="pop-up-rating">
                     <div class="user_container" >
                         <button class="popup-close-btn" onclick="close_popup_overlay('.pop-up-rating')"><i class="fas fa-times fa-2x"></i></button>
-                        <form method="POST" class="jobform">
+                        <form method="POST" class="ratingform">
                             <h2>Rateing Form</h2>
                             {% csrf_token %} {{ ratingform }}
                             <label>Rating <span id="rating_count">0</span>/5</label>
@@ -666,7 +667,7 @@
         <div class="pop-up-bill">
                     <div class="user_container" >
                         <button class="popup-close-btn" onclick="close_popup_overlay('.pop-up-bill')"><i class="fas fa-times fa-2x"></i></button>
-                        <form method="POST" enctype="multipart/form-data" class="jobform">
+                        <form method="POST" enctype="multipart/form-data" class="billform">
                             <h2>Bill update Form</h2>
                             <label for="payment_status">Select Payment Status:</label>    
                             <select name="payment_status" id="payment_status" value="{{Jobobj.payment.payment_status}}">
@@ -682,6 +683,9 @@
    {% endif %}
 
     <script>
+
+         
+
          $('input[name="rating"]').on('change',function(event){
                     var rating = event.target.value
                     $('#rating_count').text(rating)
@@ -707,17 +711,20 @@
 
         {% if jobform %}
 
-            const openJobForm = () =>{
+            const openJobForm = (seeker_id,provider_id,seeker_name,provider_name) =>{
                 open_popup_overlay('.pop-up-job')
                 $('label[for="id_seeker_id"]').css('display','none')
                 $('label[for="id_provider_id"]').css('display','none')
-                $('#id_job_title').val(service)
+                $('#id_seeker_name').val(seeker_name)
+                $('#id_provider_name').val(provider_name)
+                $('#id_seeker_id').val(seeker_id)
+                $('#id_provider_id').val(provider_id)
                 $('#id_job_title').prop('disabled', 'disabled');
             }
 
-            document.querySelector('.jobform').onsubmit = function(event){
+           document.querySelector('.jobform').onsubmit = function(event){
                 event.preventDefault()
-                close_popup_overlay('.pop-up-user')
+                close_popup_overlay('.pop-up-job')
                 $('#id_job_title').prop('disabled', false);
                 document.querySelector('.jobform').submit()
             }
@@ -735,7 +742,7 @@
 
             document.querySelector('.ratingform').onsubmit = function(event){
                 event.preventDefault()
-                close_popup_overlay('.pop-up-user')
+                close_popup_overlay('.pop-up-rating')
                 document.querySelector('.ratingform').submit()
             }
 
@@ -754,7 +761,7 @@
             }
             document.querySelector('.billform').onsubmit = function(event){
                 event.preventDefault()
-                close_popup_overlay('.pop-up-user')
+                close_popup_overlay('.pop-up-bill')
                 document.querySelector('.billform').submit()
             }
 

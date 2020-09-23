@@ -76,9 +76,9 @@ def seeker_home(request,service_catogory = None):
     else:
         jobAssignmentForm_obj = jobAssignmentForm()
     if service_catogory == "All":
-        obj = Applicationuser.objects.all()
+        obj = Applicationuser.objects.all().exclude(user__username=request.user.username)
     else:
-        obj = Applicationuser.objects.filter(Q(service_catogory = service_catogory.lower())) or None
+        obj = Applicationuser.objects.filter(Q(service_catogory = service_catogory.lower())).exclude(user__username=request.user.username) or None
     search_query = request.GET.get('search',None)
     if search_query:
         obj = obj.filter(Q(user__username__icontains =search_query)|
@@ -222,8 +222,8 @@ def update_user_rating(current_rating,new_rating,job_id):
     job_obj = Job.objects.get(job_id=job_id)
     user_obj = Applicationuser.objects.filter(uid=job_obj.provider.uid).first()
     total_user_count = user_obj.rated_user_count
-    current_rating = current_rating * total_user_count - current_rating
-    new_rating = math.ceil(((float(current_rating)+float(new_rating))*float(total_user_count))/(float(total_user_count)))
+    current_rating = int(user_obj.rating) * total_user_count - current_rating
+    new_rating = math.ceil((float(current_rating)+float(new_rating))/(float(total_user_count)))
     user_obj =  Applicationuser.objects.filter(uid=job_obj.provider.uid).update(rating=new_rating)
 
 
@@ -238,10 +238,11 @@ def job_info(request,job_id=None):
             jobform = jobAssignmentForm(request.POST)
 
             if jobform.is_valid():
-                jobj = Job.objects.filter(job_id=job_id).update(
+                Job.objects.filter(job_id=job_id).update(
                     job_discription = jobform.cleaned_data['job_discription'],
                     jobName = jobform.cleaned_data['jobName']
                 )
+                
                 jobform = jobAssignmentForm(instance=jobj)
         else:
             jobform = jobAssignmentForm(instance=jobj)
@@ -275,7 +276,7 @@ def job_info(request,job_id=None):
     
     billform=None
     if request.user.applicationuser.uid == jobj.provider.uid and jobj.job_status !='request':
-        bill_obj = Job.objects.filter(payment__jobId= int(job_id)).first().payment or None
+        bill_obj = Payment.objects.filter(jobId = int(job_id)).first() or None
         if request.method == "POST" and request.POST.get('formType') =='billform':
                billform = Payment_form(request.POST,request.FILES)
                if bill_obj:
